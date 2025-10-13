@@ -23,15 +23,10 @@ staticFiles.forEach(file => {
     console.log(`Copied ${file} to public directory`);
   }
   
-  // If file exists in both places, ensure public has the latest
+  // If file exists in both places, always copy the root version to ensure it's up to date
   if (fs.existsSync(rootFile) && fs.existsSync(publicFile)) {
-    const rootStat = fs.statSync(rootFile);
-    const publicStat = fs.statSync(publicFile);
-    
-    if (rootStat.mtime > publicStat.mtime) {
-      fs.copyFileSync(rootFile, publicFile);
-      console.log(`Updated ${file} in public directory`);
-    }
+    fs.copyFileSync(rootFile, publicFile);
+    console.log(`Updated ${file} in public directory`);
   }
 });
 

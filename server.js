@@ -8,6 +8,9 @@ const cron = require('node-cron');
 const multer = require('multer');
 const xlsx = require('xlsx');
 const pdfParse = require('pdf-parse');
+
+// Organize files for deployment
+require('./organize-files.js');
 // Optional modules - load only if available
 let dataService, tableauIntegration, dailyDataTracker;
 
@@ -39,7 +42,7 @@ require('dotenv').config();
 
 // Authentication imports
 const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
+const FileStore = require('session-file-store')(session);
 const { router: authRoutes, initialize: initializeAuth } = require('./auth-routes');
 const authMiddleware = require('./auth-middleware');
 
@@ -54,11 +57,11 @@ const io = socketIo(server, {
 
 const PORT = process.env.PORT || 3000;
 
-// Session configuration
+// Session configuration (using file-based storage)
 app.use(session({
-    store: new pgSession({
-        conString: process.env.DATABASE_URL || 'postgresql://localhost:5432/dashboard',
-        createTableIfMissing: true
+    store: new FileStore({
+        path: './data/sessions',
+        ttl: 86400 // 24 hours
     }),
     secret: process.env.SESSION_SECRET || 'your-session-secret',
     resave: false,
