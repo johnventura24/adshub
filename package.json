@@ -23,7 +23,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+<<<<<<< HEAD
+=======
     "@supabase/supabase-js": "^2.38.4",
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
     "axios": "^1.6.2",
     "bcrypt": "^5.1.0",
     "cheerio": "^1.0.0-rc.12",

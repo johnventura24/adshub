@@ -6,8 +6,12 @@ const csv = require('csv-parser');
 const fs = require('fs');
 // Import tableau integration layer instead of direct extractor
 const tableauIntegration = require('./tableau-integration');
+<<<<<<< HEAD
+// Supabase removed - using file-based storage
+=======
 // Import Supabase configuration
 const { supabase, TABLES, handleSupabaseError, isSupabaseConfigured } = require('./supabase-config');
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
 require('dotenv').config();
 
 class DataService {
@@ -55,6 +59,10 @@ class DataService {
   async initialize() {
     console.log('🔌 Initializing data service connections...');
     
+<<<<<<< HEAD
+    // Using file-based storage instead of Supabase
+    console.log('📁 Using file-based storage for data persistence...');
+=======
     // Initialize Supabase connection first (primary data store)
     if (isSupabaseConfigured()) {
       try {
@@ -70,6 +78,7 @@ class DataService {
     } else {
       console.log('⚠️ Supabase not configured, using legacy database connections...');
     }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
     
     // Initialize PostgreSQL connection if configured (fallback)
     if (this.config.postgres.user && this.config.postgres.database) {
@@ -1018,6 +1027,9 @@ class DataService {
     console.log(`📂 Loading admin uploaded ${dataType} data...`);
     
     try {
+<<<<<<< HEAD
+      // Using file-based storage instead of Supabase
+=======
       // First, try Supabase if available
       if (this.connections.supabase) {
         try {
@@ -1042,6 +1054,7 @@ class DataService {
           console.log(`⚠️ Supabase query failed for ${dataType}:`, supabaseError.message);
         }
       }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
 
       // Fallback to legacy database connections
       if (this.connections.postgres || this.connections.mysql || this.connections.mongodb) {
@@ -1284,6 +1297,10 @@ class DataService {
   }
 
   // ============================================================================
+<<<<<<< HEAD
+  // SUPABASE METHODS REMOVED - USING FILE-BASED STORAGE
+  // ============================================================================
+=======
   // SUPABASE DATA OPERATIONS
   // ============================================================================
 
@@ -1428,6 +1445,7 @@ class DataService {
       handleSupabaseError(error, 'select');
     }
   }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
 }
 
 // Export singleton instance

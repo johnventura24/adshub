@@ -33,6 +33,10 @@ try {
     tableauIntegration = null;
 }
 
+<<<<<<< HEAD
+// Daily data tracker removed - not needed for current setup
+// Leadership backup system removed - not needed for current setup
+=======
 try {
     dailyDataTracker = require('./daily-data-tracker');
     console.log('✅ Daily data tracker loaded');
@@ -49,6 +53,7 @@ try {
     console.warn('⚠️ Leadership backup system not available:', error.message);
     leadershipBackup = null;
 }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
 require('dotenv').config();
 
 // Authentication imports
@@ -941,6 +946,15 @@ async function updateAdminCredentials() {
     try {
         console.log('🔧 Updating admin credentials...');
         
+<<<<<<< HEAD
+        // Skip database operations when using file-based authentication
+        if (isUsingFileBasedAuth()) {
+            console.log('✅ Using file-based authentication - admin credentials already set');
+            return;
+        }
+        
+=======
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
         // Check if dataService has query method
         if (typeof dataService.query !== 'function') {
             console.error('❌ DataService query method not available, skipping admin credentials update');
@@ -2502,6 +2516,12 @@ app.post('/api/leadership-team', async (req, res) => {
       leaderData.id = Date.now().toString();
     }
     
+<<<<<<< HEAD
+    // Save to database (using file-based storage)
+    let savedLeader;
+    try {
+      savedLeader = await dataService.saveLeadershipToDatabase(leaderData);
+=======
     // Save to database (prioritize Supabase)
     let savedLeader;
     try {
@@ -2511,6 +2531,7 @@ app.post('/api/leadership-team', async (req, res) => {
       } else {
         savedLeader = await dataService.saveLeadershipToDatabase(leaderData);
       }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
     } catch (error) {
       console.error('❌ Primary save method failed:', error.message);
       // Fallback to legacy method
@@ -2559,6 +2580,12 @@ app.put('/api/leadership-team/:id', async (req, res) => {
     // Ensure ID matches
     leaderData.id = leaderId;
     
+<<<<<<< HEAD
+    // Update in database (using file-based storage)
+    let updatedLeader;
+    try {
+      updatedLeader = await dataService.saveLeadershipToDatabase(leaderData);
+=======
     // Update in database (prioritize Supabase)
     let updatedLeader;
     try {
@@ -2568,6 +2595,7 @@ app.put('/api/leadership-team/:id', async (req, res) => {
       } else {
         updatedLeader = await dataService.saveLeadershipToDatabase(leaderData);
       }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
     } catch (error) {
       console.error('❌ Primary update method failed:', error.message);
       // Fallback to legacy method
@@ -2604,6 +2632,12 @@ app.delete('/api/leadership-team/:id', async (req, res) => {
     
     console.log(`🗑️ API: Deleting leadership team member ${leaderId}...`);
     
+<<<<<<< HEAD
+    // Delete from database (using file-based storage)
+    let deletedLeader;
+    try {
+      deletedLeader = await dataService.deleteLeadershipFromDatabase(leaderId);
+=======
     // Delete from database (prioritize Supabase)
     let deletedLeader;
     try {
@@ -2613,6 +2647,7 @@ app.delete('/api/leadership-team/:id', async (req, res) => {
       } else {
         deletedLeader = await dataService.deleteLeadershipFromDatabase(leaderId);
       }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
     } catch (error) {
       console.error('❌ Primary delete method failed:', error.message);
       // Fallback to legacy method
@@ -3718,6 +3753,20 @@ app.post('/api/admin/ninety/upload',
             // Process data based on type and add department, extract user from CSV
             const processedData = processNinetyExcelData(jsonData, dataType, department);
             
+<<<<<<< HEAD
+            // Save to appropriate data store (using file-based storage)
+            let savedCount = 0;
+            
+            try {
+                if (isUsingFileBasedAuth()) {
+                    // Use JSON files for file-based authentication
+                    savedCount = await saveNinetyDataToFiles(processedData, dataType);
+                    console.log(`✅ Saved ${savedCount} ${dataType} records to JSON files`);
+                } else {
+                    // Fallback to legacy database
+                    savedCount = await saveNinetyDataToDatabase(processedData, dataType, req.user.id);
+                    console.log(`✅ Saved ${savedCount} ${dataType} records to database`);
+=======
             // Save to appropriate data store (prioritize Supabase)
             let savedCount = 0;
             
@@ -3733,6 +3782,7 @@ app.post('/api/admin/ninety/upload',
                 } else {
                     // Fallback to legacy database
                     savedCount = await saveNinetyDataToDatabase(processedData, dataType, req.user.id);
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
                 }
             } catch (error) {
                 console.error(`❌ Primary save method failed:`, error.message);
@@ -3791,6 +3841,18 @@ app.get('/api/admin/ninety/data',
                 scorecard: []
             };
             
+<<<<<<< HEAD
+            // Load data (using file-based storage)
+            try {
+                if (isUsingFileBasedAuth()) {
+                    // Use JSON files for file-based authentication
+                    data = await loadNinetyDataFromFiles();
+                    console.log('✅ Loaded Ninety.io data from JSON files');
+                } else {
+                    // Fallback to legacy database
+                    data = await loadNinetyDataFromDatabase();
+                    console.log('✅ Loaded Ninety.io data from database');
+=======
             // Load data (prioritize Supabase)
             try {
                 if (dataService.connections.supabase) {
@@ -3803,6 +3865,7 @@ app.get('/api/admin/ninety/data',
                 } else {
                     // Fallback to legacy database
                     data = await loadNinetyDataFromDatabase();
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
                 }
             } catch (error) {
                 console.error('❌ Primary data load failed:', error.message);
@@ -4681,6 +4744,9 @@ async function loadNinetyDataFromDatabase() {
     return data;
 }
 
+<<<<<<< HEAD
+// Supabase function removed - using file-based storage instead
+=======
 // Load Ninety.io data from Supabase
 async function loadNinetyDataFromSupabase() {
     const data = {
@@ -4712,6 +4778,7 @@ async function loadNinetyDataFromSupabase() {
     
     return data;
 }
+>>>>>>> 52f1e9060b61fe0f4604066ee4e684c8e5d899ca
 
 async function deleteNinetyItemFromDatabase(dataType, itemId) {
     try {
