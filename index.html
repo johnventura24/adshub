@@ -1,255 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AdsHub - Company Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>🎯 AdsHub Dashboard</h1>
-      <div class="last-update">Last updated: <span id="lastUpdate">-</span></div>
-    </header>
+// sample-scorecard.json
+{
+  "revenue": 85,
+  "customerSatisfaction": 92,
+  "newLeads": 78,
+  "conversionRate": 88,
+  "teamEfficiency": 91,
+  "projectsOnTime": 76
+}
 
-    <!-- Data Upload Section -->
-    <section class="upload-section">
-      <h2>📤 Upload Data</h2>
-      <div class="upload-controls">
-        <select id="dataType">
-          <option value="goals">Goals</option>
-          <option value="issues">Issues</option>
-          <option value="todos">To-Dos</option>
-          <option value="scorecard">Scorecard</option>
-          <option value="vto">VTO</option>
-        </select>
-        <input type="file" id="fileUpload" accept=".csv,.json">
-        <button onclick="uploadData()">Upload</button>
-      </div>
-    </section>
-
-    <!-- Tableau Data Section -->
-    <section class="tableau-section">
-      <h2>📊 Tableau Funnel Analysis</h2>
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <h3>Leads</h3>
-          <p class="metric-value" id="leads">-</p>
-        </div>
-        <div class="metric-card">
-          <h3>Prospects</h3>
-          <p class="metric-value" id="prospects">-</p>
-        </div>
-        <div class="metric-card">
-          <h3>Qualified</h3>
-          <p class="metric-value" id="qualified">-</p>
-        </div>
-        <div class="metric-card">
-          <h3>Proposals</h3>
-          <p class="metric-value" id="proposals">-</p>
-        </div>
-        <div class="metric-card">
-          <h3>Closed</h3>
-          <p class="metric-value" id="closed">-</p>
-        </div>
-        <div class="metric-card">
-          <h3>Revenue</h3>
-          <p class="metric-value" id="revenue">-</p>
-        </div>
-      </div>
-      <canvas id="funnelChart"></canvas>
-    </section>
-
-    <!-- Goals Section -->
-    <section class="goals-section">
-      <h2>🎯 Goals</h2>
-      <div id="goalsContent">No goals data yet. Upload to get started!</div>
-    </section>
-
-    <!-- Issues Section -->
-    <section class="issues-section">
-      <h2>⚠️ Issues</h2>
-      <div id="issuesContent">No issues data yet. Upload to get started!</div>
-    </section>
-  </div>
-
-  <script>
-    const socket = io();
-    let funnelChart = null;
-
-    // Initialize
-    socket.on('connect', () => {
-      console.log('Connected to server');
-    });
-
-    socket.on('initialData', (data) => {
-      console.log('Received initial data:', data);
-      updateDashboard(data);
-    });
-
-    socket.on('tableauUpdate', (data) => {
-      console.log('Tableau data updated:', data);
-      updateTableauData(data);
-    });
-
-    socket.on('dataUpdate', (update) => {
-      console.log('Data updated:', update);
-      updateDashboard(update.data);
-    });
-
-    function updateDashboard(data) {
-      updateLastUpdate();
-      
-      if (data.tableau) {
-        updateTableauData(data.tableau);
-      }
-      
-      if (data.goals) {
-        updateGoals(data.goals);
-      }
-      
-      if (data.issues) {
-        updateIssues(data.issues);
-      }
+// sample-rocks.json
+{
+  "rocks": [
+    {
+      "id": 1,
+      "title": "Launch new marketing campaign",
+      "owner": "Sarah Johnson",
+      "dueDate": "Q1 2024",
+      "progress": 65,
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Implement CRM system",
+      "owner": "Mike Chen",
+      "dueDate": "Q1 2024",
+      "progress": 40,
+      "completed": false
+    },
+    {
+      "id": 3,
+      "title": "Hire 5 new team members",
+      "owner": "HR Department",
+      "dueDate": "Q1 2024",
+      "progress": 80,
+      "completed": false
+    },
+    {
+      "id": 4,
+      "title": "Increase revenue by 20%",
+      "owner": "Sales Team",
+      "dueDate": "Q1 2024",
+      "progress": 55,
+      "completed": false
     }
+  ]
+}
 
-    function updateTableauData(tableauData) {
-      const funnel = tableauData.data.funnel;
-      
-      document.getElementById('leads').textContent = funnel.leads.toLocaleString();
-      document.getElementById('prospects').textContent = funnel.prospects.toLocaleString();
-      document.getElementById('qualified').textContent = funnel.qualified.toLocaleString();
-      document.getElementById('proposals').textContent = funnel.proposals.toLocaleString();
-      document.getElementById('closed').textContent = funnel.closed.toLocaleString();
-      document.getElementById('revenue').textContent = '$' + funnel.revenue.toLocaleString();
-      
-      updateFunnelChart(funnel);
-      updateLastUpdate();
+// sample-todos.json
+[
+  {
+    "id": 1,
+    "task": "Review Q4 financials",
+    "assignee": "John Doe",
+    "dueDate": "2024-01-15",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "task": "Schedule team standup",
+    "assignee": "Jane Smith",
+    "dueDate": "2024-01-10",
+    "completed": false
+  },
+  {
+    "id": 3,
+    "task": "Update client proposals",
+    "assignee": "Mike Johnson",
+    "dueDate": "2024-01-12",
+    "completed": false
+  },
+  {
+    "id": 4,
+    "task": "Prepare board presentation",
+    "assignee": "Sarah Lee",
+    "dueDate": "2024-01-20",
+    "completed": false
+  },
+  {
+    "id": 5,
+    "task": "Review marketing materials",
+    "assignee": "Tom Brown",
+    "dueDate": "2024-01-08",
+    "completed": false
+  }
+]
+
+// sample-issues.json
+[
+  {
+    "id": 1,
+    "title": "Website performance degradation",
+    "description": "Page load times have increased by 40% over the past week",
+    "priority": "high",
+    "status": "open",
+    "assignee": "Tech Team",
+    "created": "2024-01-05"
+  },
+  {
+    "id": 2,
+    "title": "Client onboarding delays",
+    "description": "New clients are experiencing 2-week delays in onboarding process",
+    "priority": "medium",
+    "status": "open",
+    "assignee": "Operations",
+    "created": "2024-01-04"
+  },
+  {
+    "id": 3,
+    "title": "Sales team capacity constraint",
+    "description": "Current team can't handle the increased lead volume",
+    "priority": "high",
+    "status": "open",
+    "assignee": "Sales Manager",
+    "created": "2024-01-03"
+  },
+  {
+    "id": 4,
+    "title": "Product documentation outdated",
+    "description": "Documentation hasn't been updated for the last 3 releases",
+    "priority": "low",
+    "status": "open",
+    "assignee": "Product Team",
+    "created": "2024-01-02"
+  }
+]
+
+// complete-dashboard-data.json
+{
+  "scorecard": {
+    "revenue": 85,
+    "customerSatisfaction": 92,
+    "newLeads": 78,
+    "conversionRate": 88,
+    "teamEfficiency": 91,
+    "projectsOnTime": 76
+  },
+  "rocks": [
+    {
+      "id": 1,
+      "title": "Launch new marketing campaign",
+      "owner": "Sarah Johnson",
+      "dueDate": "Q1 2024",
+      "progress": 65,
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Implement CRM system",
+      "owner": "Mike Chen",
+      "dueDate": "Q1 2024",
+      "progress": 40,
+      "completed": false
     }
-
-    function updateFunnelChart(funnel) {
-      const ctx = document.getElementById('funnelChart').getContext('2d');
-      
-      if (funnelChart) {
-        funnelChart.destroy();
-      }
-      
-      funnelChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Leads', 'Prospects', 'Qualified', 'Proposals', 'Closed'],
-          datasets: [{
-            label: 'Sales Funnel',
-            data: [funnel.leads, funnel.prospects, funnel.qualified, funnel.proposals, funnel.closed],
-            backgroundColor: [
-              'rgba(54, 162, 235, 0.6)',
-              'rgba(75, 192, 192, 0.6)',
-              'rgba(255, 206, 86, 0.6)',
-              'rgba(255, 159, 64, 0.6)',
-              'rgba(75, 192, 192, 0.6)'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
+  ],
+  "todos": [
+    {
+      "id": 1,
+      "task": "Review Q4 financials",
+      "assignee": "John Doe",
+      "dueDate": "2024-01-15",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "task": "Schedule team standup",
+      "assignee": "Jane Smith",
+      "dueDate": "2024-01-10",
+      "completed": false
     }
-
-    function updateGoals(goals) {
-      const content = document.getElementById('goalsContent');
-      content.innerHTML = `
-        <div class="goal">
-          <h3>Quarterly Goal</h3>
-          <p>Target: $${goals.quarterly.target.toLocaleString()}</p>
-          <p>Current: $${goals.quarterly.current.toLocaleString()}</p>
-          <p>Progress: ${goals.quarterly.percentage}%</p>
-        </div>
-        <div class="goal">
-          <h3>Monthly Goal</h3>
-          <p>Target: $${goals.monthly.target.toLocaleString()}</p>
-          <p>Current: $${goals.monthly.current.toLocaleString()}</p>
-          <p>Progress: ${goals.monthly.percentage}%</p>
-        </div>
-      `;
+  ],
+  "issues": [
+    {
+      "id": 1,
+      "title": "Website performance degradation",
+      "description": "Page load times have increased by 40%",
+      "priority": "high",
+      "status": "open",
+      "assignee": "Tech Team",
+      "created": "2024-01-05"
     }
-
-    function updateIssues(issues) {
-      const content = document.getElementById('issuesContent');
-      if (issues.length === 0) {
-        content.innerHTML = 'No issues reported.';
-        return;
-      }
-      
-      content.innerHTML = issues.map(issue => `
-        <div class="issue">
-          <strong>${issue.title}</strong>
-          <p>${issue.description}</p>
-          <span class="priority-${issue.priority}">${issue.priority}</span>
-        </div>
-      `).join('');
-    }
-
-    function updateLastUpdate() {
-      document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-    }
-
-    async function uploadData() {
-      const fileInput = document.getElementById('fileUpload');
-      const dataType = document.getElementById('dataType').value;
-      
-      if (!fileInput.files[0]) {
-        alert('Please select a file');
-        return;
-      }
-      
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-      
-      reader.onload = async (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          
-          const response = await fetch('/api/upload-data', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              type: dataType,
-              data: data
-            })
-          });
-          
-          const result = await response.json();
-          
-          if (result.success) {
-            alert('Data uploaded successfully!');
-            fileInput.value = '';
-          } else {
-            alert('Upload failed: ' + result.error);
-          }
-        } catch (error) {
-          alert('Error uploading file: ' + error.message);
-        }
-      };
-      
-      reader.readAsText(file);
-    }
-
-    // Initial load
-    fetch('/api/dashboard')
-      .then(r => r.json())
-      .then(data => updateDashboard(data))
-      .catch(err => console.error('Error loading dashboard:', err));
-  </script>
-</body>
-</html>
+  ]
+}
