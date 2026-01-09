@@ -46,7 +46,12 @@ const NinetyHub = () => {
     
     try {
       console.log('📊 Fetching Tableau KPIs...');
-      const response = await fetch('http://localhost:3001/api/tableau/kpis', {
+      // Use relative URL in production, localhost in development
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? '/api/tableau/kpis' 
+        : 'http://localhost:3001/api/tableau/kpis';
+      
+      const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

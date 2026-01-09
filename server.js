@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const path = require('path');
 const tableauIntegration = require('./tableau-integration');
 
 const app = express();
@@ -12,6 +13,11 @@ const io = socketIo(server, {
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from React build in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build')));
+}
 
 // Store data in memory (use database in production)
 let data = {
@@ -215,6 +221,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Serve React app in production (must be after API routes)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
+}
+
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
   console.log('📱 Client connected');
@@ -244,8 +257,10 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+const HOST = '0.0.0.0'; // Required for Render and other cloud platforms
+
+server.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
   console.log(`📊 Tableau Integration: Active`);
   console.log(`🔗 Dashboard URL: https://public.tableau.com/app/profile/niksa.derek/viz/FunnelAnalysis_17472437058310/TableView`);
   
