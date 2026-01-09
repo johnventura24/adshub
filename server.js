@@ -216,17 +216,42 @@ app.post('/api/tableau/refresh', async (req, res) => {
   }
 });
 
-// Health check
+// Health check (critical for Render)
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Root health check (in case Render checks this)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
 // Serve React app in production (must be after API routes)
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    const indexPath = path.join(__dirname, 'build', 'index.html');
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading application. Please ensure build folder exists.');
+      }
+    });
   });
 }
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
 
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
@@ -263,9 +288,10 @@ server.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on ${HOST}:${PORT}`);
   console.log(`📊 Tableau Integration: Active`);
   console.log(`🔗 Dashboard URL: https://public.tableau.com/app/profile/niksa.derek/viz/FunnelAnalysis_17472437058310/TableView`);
+  console.log(`✅ Server is ready to accept connections`);
   
-  // Initial Tableau data fetch
-  (async () => {
+  // Initial Tableau data fetch (non-blocking, won't crash server if it fails)
+  setTimeout(async () => {
     try {
       console.log('\n🔄 Performing initial Tableau data fetch...');
       const comprehensiveData = await tableauIntegration.getComprehensivePlatformData();
@@ -278,7 +304,8 @@ server.listen(PORT, HOST, () => {
       tableauCache.lastFetch = Date.now();
       console.log(`✅ Initial Tableau data loaded: ${kpis.leads} leads, $${kpis.revenue} revenue\n`);
     } catch (error) {
-      console.error('❌ Initial Tableau fetch failed:', error.message);
+      console.error('⚠️ Initial Tableau fetch failed (non-critical):', error.message);
+      console.log('ℹ️ Server continues to run, Tableau data will be fetched on first API request');
     }
-  })();
+  }, 1000); // Delay by 1 second to ensure server is fully ready
 });
