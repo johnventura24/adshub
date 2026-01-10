@@ -4,13 +4,9 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: node server-minimal.js
+    buildCommand: npm install
+    startCommand: node server-ultra-minimal.js
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
-        value: production
-      - key: TABLEAU_DASHBOARD_URL
-        value: https://public.tableau.com/app/profile/niksa.derek/viz/FunnelAnalysis_17472437058310/TableView?publish=yes
-      - key: ENABLE_TABLEAU_AUTO_EXTRACT
-        value: true 
+        value: production 
