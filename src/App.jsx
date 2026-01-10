@@ -203,7 +203,7 @@ const NinetyHub = () => {
 
   // Modal Components
   const AddGoalModal = () => {
-    const [formData, setFormData] = useState({ title: '', target: 0, current: 0, quarter: 'Q1 2026' });
+    const [formData, setFormData] = useState({ title: '', target: 0, current: 0, quarter: 'Q1 2026', addedBy: '', assignedTo: '' });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -217,7 +217,9 @@ const NinetyHub = () => {
           <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
           <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress" value={formData.current} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
-          <input className="w-full p-2 border rounded mb-4" placeholder="Quarter (e.g., Q1 2026)" value={formData.quarter} onChange={(e) => setFormData({...formData, quarter: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Quarter (e.g., Q1 2026)" value={formData.quarter} onChange={(e) => setFormData({...formData, quarter: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} required />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} required />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('goal', formData)}>Add Goal</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
@@ -253,7 +255,7 @@ const NinetyHub = () => {
   };
 
   const AddRockModal = () => {
-    const [formData, setFormData] = useState({ title: '', owner: '', dueDate: '', status: 'on-track', progress: 0 });
+    const [formData, setFormData] = useState({ title: '', owner: '', dueDate: '', status: 'on-track', progress: 0, addedBy: '', assignedTo: '' });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -272,7 +274,9 @@ const NinetyHub = () => {
             <option value="at-risk">At Risk</option>
             <option value="off-track">Off Track</option>
           </select>
-          <input className="w-full p-2 border rounded mb-4" type="number" placeholder="Progress %" min="0" max="100" value={formData.progress} onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Progress %" min="0" max="100" value={formData.progress} onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} required />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} required />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('rock', formData)}>Add Rock</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
@@ -313,7 +317,7 @@ const NinetyHub = () => {
   };
 
   const AddIssueModal = () => {
-    const [formData, setFormData] = useState({ title: '', priority: 'medium', owner: '', status: 'open' });
+    const [formData, setFormData] = useState({ title: '', priority: 'medium', owner: '', status: 'open', addedBy: '', assignedTo: '' });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -332,6 +336,8 @@ const NinetyHub = () => {
             <option value="critical">Critical</option>
           </select>
           <input className="w-full p-2 border rounded mb-3" placeholder="Owner" value={formData.owner} onChange={(e) => setFormData({...formData, owner: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} required />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} required />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('issue', formData)}>Add Issue</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
@@ -375,7 +381,7 @@ const NinetyHub = () => {
   };
 
   const AddTodoModal = () => {
-    const [formData, setFormData] = useState({ title: '', assignee: '', dueDate: '', completed: false });
+    const [formData, setFormData] = useState({ title: '', assignee: '', dueDate: '', completed: false, addedBy: '', assignedTo: '' });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -388,7 +394,9 @@ const NinetyHub = () => {
           </div>
           <input className="w-full p-2 border rounded mb-3" placeholder="To-Do Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" placeholder="Assignee" value={formData.assignee} onChange={(e) => setFormData({...formData, assignee: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-4" type="date" value={formData.dueDate} onChange={(e) => setFormData({...formData, dueDate: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="date" value={formData.dueDate} onChange={(e) => setFormData({...formData, dueDate: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} required />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} required />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('todo', formData)}>Add To-Do</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
@@ -423,7 +431,7 @@ const NinetyHub = () => {
   };
 
   const AddScorecardModal = () => {
-    const [formData, setFormData] = useState({ metric: '', target: 0, actual: 0, trend: 'neutral' });
+    const [formData, setFormData] = useState({ metric: '', target: 0, actual: 0, trend: 'neutral', addedBy: '', assignedTo: '' });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -437,11 +445,13 @@ const NinetyHub = () => {
           <input className="w-full p-2 border rounded mb-3" placeholder="Metric Name" value={formData.metric} onChange={(e) => setFormData({...formData, metric: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
           <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Actual" value={formData.actual} onChange={(e) => setFormData({...formData, actual: parseInt(e.target.value) || 0})} />
-          <select className="w-full p-2 border rounded mb-4" value={formData.trend} onChange={(e) => setFormData({...formData, trend: e.target.value})}>
+          <select className="w-full p-2 border rounded mb-3" value={formData.trend} onChange={(e) => setFormData({...formData, trend: e.target.value})}>
             <option value="up">Trending Up</option>
             <option value="down">Trending Down</option>
             <option value="neutral">Neutral</option>
           </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} required />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} required />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('scorecard', formData)}>Add Metric</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
@@ -1065,7 +1075,7 @@ const NinetyHub = () => {
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Company Hub</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Adsync Media Hub</h1>
                 <p className="text-sm text-gray-600">90-Day Operating System with Live Tableau KPIs</p>
               </div>
             </div>
