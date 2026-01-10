@@ -1,16 +1,72 @@
-// Log startup to help debug Render deployment
-console.log('🔄 Starting server...');
+// CRITICAL: Log everything for debugging Render deployment
+console.log('========================================');
+console.log('🔄 SERVER STARTUP INITIATED');
+console.log('========================================');
 console.log('📍 Current directory:', __dirname);
 console.log('🌍 Environment:', process.env.NODE_ENV);
 console.log('🔌 Port:', process.env.PORT || 3001);
+console.log('📦 Node version:', process.version);
+console.log('⏰ Timestamp:', new Date().toISOString());
+console.log('========================================');
 
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const path = require('path');
+// Catch all uncaught errors
+process.on('uncaughtException', (error) => {
+  console.error('❌ UNCAUGHT EXCEPTION:', error);
+  console.error('Stack:', error.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ UNHANDLED REJECTION at:', promise);
+  console.error('Reason:', reason);
+});
+
+console.log('📦 Loading dependencies...');
+
+let express, http, socketIo, cors, path;
+
+try {
+  express = require('express');
+  console.log('✅ Express loaded');
+} catch (error) {
+  console.error('❌ FAILED to load express:', error.message);
+  process.exit(1);
+}
+
+try {
+  http = require('http');
+  console.log('✅ HTTP loaded');
+} catch (error) {
+  console.error('❌ FAILED to load http:', error.message);
+  process.exit(1);
+}
+
+try {
+  socketIo = require('socket.io');
+  console.log('✅ Socket.io loaded');
+} catch (error) {
+  console.error('❌ FAILED to load socket.io:', error.message);
+  process.exit(1);
+}
+
+try {
+  cors = require('cors');
+  console.log('✅ CORS loaded');
+} catch (error) {
+  console.error('❌ FAILED to load cors:', error.message);
+  process.exit(1);
+}
+
+try {
+  path = require('path');
+  console.log('✅ Path loaded');
+} catch (error) {
+  console.error('❌ FAILED to load path:', error.message);
+  process.exit(1);
+}
 
 // Wrap tableau-integration require in try-catch
+console.log('📊 Loading Tableau integration...');
 let tableauIntegration;
 try {
   tableauIntegration = require('./tableau-integration');
@@ -26,18 +82,45 @@ try {
   };
 }
 
+console.log('🏗️ Creating Express app...');
+
 const app = express();
+console.log('✅ Express app created');
+
 const server = http.createServer(app);
+console.log('✅ HTTP server created');
+
 const io = socketIo(server, {
   cors: { origin: "*" }
 });
+console.log('✅ Socket.io initialized');
 
 app.use(cors());
+console.log('✅ CORS middleware added');
+
 app.use(express.json());
+console.log('✅ JSON parser added');
 
 // Serve static files from React build in production
+console.log('🔍 Checking for build folder...');
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'build')));
+  const buildPath = path.join(__dirname, 'build');
+  console.log('📂 Build path:', buildPath);
+  
+  try {
+    const fs = require('fs');
+    if (fs.existsSync(buildPath)) {
+      console.log('✅ Build folder exists');
+      app.use(express.static(buildPath));
+      console.log('✅ Static file serving enabled');
+    } else {
+      console.error('⚠️ Build folder NOT found at:', buildPath);
+    }
+  } catch (error) {
+    console.error('⚠️ Error checking build folder:', error.message);
+  }
+} else {
+  console.log('ℹ️ Development mode - skipping build folder');
 }
 
 // Store data in memory (use database in production)
@@ -306,18 +389,25 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3001;
 const HOST = '0.0.0.0'; // Required for Render and other cloud platforms
 
-console.log(`🔧 Attempting to bind to ${HOST}:${PORT}...`);
+console.log('========================================');
+console.log('🚀 ATTEMPTING TO START SERVER');
+console.log('========================================');
+console.log(`🔧 Binding to: ${HOST}:${PORT}`);
+console.log('⏰ Start time:', new Date().toISOString());
+console.log('========================================');
 
 server.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on ${HOST}:${PORT}`);
-  console.log(`📊 Tableau Integration: ${tableauIntegration ? 'Active (lazy load)' : 'Disabled'}`);
-  console.log(`✅ Server is ready to accept connections`);
+  console.log('========================================');
+  console.log('🎉 SERVER SUCCESSFULLY STARTED!');
+  console.log('========================================');
+  console.log(`🚀 Server listening on: ${HOST}:${PORT}`);
+  console.log(`📊 Tableau: ${tableauIntegration ? 'Available (lazy load)' : 'Disabled'}`);
   console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🎯 Health check: http://${HOST}:${PORT}/health`);
-  
-  // Do NOT fetch Tableau data on startup - only fetch when API is called
-  // This ensures the server starts INSTANTLY for Render's health check
-  console.log('ℹ️ Tableau data will be fetched on first API request (lazy loading)');
+  console.log('✅ SERVER IS READY TO ACCEPT CONNECTIONS');
+  console.log('========================================');
+  console.log('ℹ️ Tableau data will load on first API request');
+  console.log('========================================');
 });
 
 // Handle server errors
