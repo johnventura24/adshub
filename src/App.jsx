@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Plane } from 'lucide-react';
 import './App.css';
 
 const NinetyHub = () => {
@@ -13,6 +13,8 @@ const NinetyHub = () => {
   const [issues, setIssues] = useState([]);
   const [todos, setTodos] = useState([]);
   const [scorecard, setScorecard] = useState([]);
+  const [vto, setVto] = useState([]);
+  const [meetings, setMeetings] = useState([]);
   
   // Tableau KPIs state
   const [tableauKPIs, setTableauKPIs] = useState(null);
@@ -130,6 +132,9 @@ const NinetyHub = () => {
         { id: 3, metric: 'Team Productivity', target: 85, actual: 88, trend: 'up' }
       ]));
       
+      setVto(loadData('vto', []));
+      setMeetings(loadData('meetings', []));
+      
       // Fetch Tableau KPIs on mount (with slight delay to ensure everything is loaded)
       const timeoutId = setTimeout(() => {
         fetchTableauKPIs().catch(err => {
@@ -161,6 +166,8 @@ const NinetyHub = () => {
   useEffect(() => { saveData('issues', issues); }, [issues]);
   useEffect(() => { saveData('todos', todos); }, [todos]);
   useEffect(() => { saveData('scorecard', scorecard); }, [scorecard]);
+  useEffect(() => { saveData('vto', vto); }, [vto]);
+  useEffect(() => { saveData('meetings', meetings); }, [meetings]);
 
   // CRUD Operations
   const handleAdd = (type, data) => {
@@ -171,6 +178,8 @@ const NinetyHub = () => {
       case 'issue': setIssues([...issues, newItem]); break;
       case 'todo': setTodos([...todos, newItem]); break;
       case 'scorecard': setScorecard([...scorecard, newItem]); break;
+      case 'vto': setVto([...vto, newItem]); break;
+      case 'meeting': setMeetings([...meetings, newItem]); break;
       default: break;
     }
     setShowAddModal(null);
@@ -183,6 +192,8 @@ const NinetyHub = () => {
       case 'issue': setIssues(issues.map(i => i.id === id ? { ...i, ...data } : i)); break;
       case 'todo': setTodos(todos.map(t => t.id === id ? { ...t, ...data } : t)); break;
       case 'scorecard': setScorecard(scorecard.map(s => s.id === id ? { ...s, ...data } : s)); break;
+      case 'vto': setVto(vto.map(v => v.id === id ? { ...v, ...data } : v)); break;
+      case 'meeting': setMeetings(meetings.map(m => m.id === id ? { ...m, ...data } : m)); break;
       default: break;
     }
     setEditingItem(null);
@@ -196,6 +207,8 @@ const NinetyHub = () => {
         case 'issue': setIssues(issues.filter(i => i.id !== id)); break;
         case 'todo': setTodos(todos.filter(t => t.id !== id)); break;
         case 'scorecard': setScorecard(scorecard.filter(s => s.id !== id)); break;
+        case 'vto': setVto(vto.filter(v => v.id !== id)); break;
+        case 'meeting': setMeetings(meetings.filter(m => m.id !== id)); break;
         default: break;
       }
     }
@@ -244,7 +257,9 @@ const NinetyHub = () => {
           <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
           <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress" value={formData.current} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
-          <input className="w-full p-2 border rounded mb-4" placeholder="Quarter" value={formData.quarter} onChange={(e) => setFormData({...formData, quarter: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Quarter" value={formData.quarter} onChange={(e) => setFormData({...formData, quarter: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('goal', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
@@ -306,7 +321,9 @@ const NinetyHub = () => {
             <option value="at-risk">At Risk</option>
             <option value="off-track">Off Track</option>
           </select>
-          <input className="w-full p-2 border rounded mb-4" type="number" placeholder="Progress %" min="0" max="100" value={formData.progress} onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Progress %" min="0" max="100" value={formData.progress} onChange={(e) => setFormData({...formData, progress: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('rock', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
@@ -371,6 +388,8 @@ const NinetyHub = () => {
             <option value="open">Open</option>
             <option value="resolved">Resolved</option>
           </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('issue', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
@@ -420,7 +439,9 @@ const NinetyHub = () => {
           </div>
           <input className="w-full p-2 border rounded mb-3" placeholder="To-Do Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" placeholder="Assignee" value={formData.assignee} onChange={(e) => setFormData({...formData, assignee: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-4" type="date" value={formData.dueDate} onChange={(e) => setFormData({...formData, dueDate: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="date" value={formData.dueDate} onChange={(e) => setFormData({...formData, dueDate: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('todo', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
@@ -483,6 +504,164 @@ const NinetyHub = () => {
           </select>
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('scorecard', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // VTO Modals
+  const AddVTOModal = () => {
+    const [formData, setFormData] = useState({ employee: '', type: 'vacation', startDate: '', endDate: '', status: 'pending', addedBy: '', assignedTo: '' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add New VTO</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Employee Name" value={formData.employee} onChange={(e) => setFormData({...formData, employee: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            <option value="vacation">Vacation</option>
+            <option value="sick">Sick Leave</option>
+            <option value="personal">Personal</option>
+            <option value="holiday">Holiday</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="Start Date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="End Date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="denied">Denied</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('vto', formData)}>Add VTO</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditVTOModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit VTO</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Employee Name" value={formData.employee || ''} onChange={(e) => setFormData({...formData, employee: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.type || 'vacation'} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            <option value="vacation">Vacation</option>
+            <option value="sick">Sick Leave</option>
+            <option value="personal">Personal</option>
+            <option value="holiday">Holiday</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="Start Date" value={formData.startDate || ''} onChange={(e) => setFormData({...formData, startDate: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="End Date" value={formData.endDate || ''} onChange={(e) => setFormData({...formData, endDate: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.status || 'pending'} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="denied">Denied</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('vto', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Meetings Modals
+  const AddMeetingModal = () => {
+    const [formData, setFormData] = useState({ title: '', meetingType: 'weekly', date: '', time: '', attendees: '', status: 'scheduled', addedBy: '', assignedTo: '' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add New Meeting</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Meeting Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.meetingType} onChange={(e) => setFormData({...formData, meetingType: e.target.value})}>
+            <option value="weekly">Weekly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="one-on-one">One-on-One</option>
+            <option value="team">Team Meeting</option>
+            <option value="all-hands">All Hands</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="Date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="time" placeholder="Time" value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Attendees (comma separated)" value={formData.attendees} onChange={(e) => setFormData({...formData, attendees: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('meeting', formData)}>Add Meeting</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditMeetingModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit Meeting</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Meeting Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.meetingType || 'weekly'} onChange={(e) => setFormData({...formData, meetingType: e.target.value})}>
+            <option value="weekly">Weekly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="one-on-one">One-on-One</option>
+            <option value="team">Team Meeting</option>
+            <option value="all-hands">All Hands</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="Date" value={formData.date || ''} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="time" placeholder="Time" value={formData.time || ''} onChange={(e) => setFormData({...formData, time: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Attendees (comma separated)" value={formData.attendees || ''} onChange={(e) => setFormData({...formData, attendees: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.status || 'scheduled'} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('meeting', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
           </div>
         </div>
@@ -1064,6 +1243,137 @@ const NinetyHub = () => {
     </div>
   );
 
+  // VTO Component
+  const VTO = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">VTO (Vacation Time Off)</h2>
+        <button onClick={() => setShowAddModal('vto')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add VTO
+        </button>
+      </div>
+      <div className="p-6">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Employee</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Start Date</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">End Date</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Added By</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vto.map((item, index) => (
+                <tr key={item.id} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-4 py-3 text-sm font-medium">{item.employee || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.type || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      item.status === 'approved' ? 'bg-green-100 text-green-700' : 
+                      item.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.addedBy || 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {vto.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              No VTO requests yet. Click "Add VTO" to create your first vacation time off entry.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Meetings Component
+  const Meetings = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Meetings</h2>
+        <button onClick={() => setShowAddModal('meeting')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Meeting
+        </button>
+      </div>
+      <div className="p-6">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Time</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Attendees</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Added By</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {meetings.map((item, index) => (
+                <tr key={item.id} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-4 py-3 text-sm font-medium">{item.title || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.meetingType || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.time || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.attendees || 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      item.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : 
+                      item.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                      item.status === 'cancelled' ? 'bg-red-100 text-red-700' : 
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.addedBy || 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={() => setEditingItem({ type: 'meeting', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete('meeting', item.id)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {meetings.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              No meetings scheduled yet. Click "Add Meeting" to create your first meeting.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -1097,7 +1407,9 @@ const NinetyHub = () => {
               { id: 'rocks', label: 'Rocks', icon: TrendingUp },
               { id: 'issues', label: 'Issues', icon: AlertCircle },
               { id: 'todos', label: 'To-Dos', icon: CheckSquare },
-              { id: 'scorecard', label: 'Scorecard', icon: BarChart3 }
+              { id: 'scorecard', label: 'Scorecard', icon: BarChart3 },
+              { id: 'vto', label: 'VTO', icon: Plane },
+              { id: 'meetings', label: 'Meetings', icon: Calendar }
             ].map(tab => {
               const Icon = tab.icon;
               return (
@@ -1127,6 +1439,8 @@ const NinetyHub = () => {
         {activeTab === 'issues' && <Issues />}
         {activeTab === 'todos' && <Todos />}
         {activeTab === 'scorecard' && <Scorecard />}
+        {activeTab === 'vto' && <VTO />}
+        {activeTab === 'meetings' && <Meetings />}
       </main>
 
       {/* Modals */}
@@ -1135,12 +1449,16 @@ const NinetyHub = () => {
       {showAddModal === 'issue' && <AddIssueModal />}
       {showAddModal === 'todo' && <AddTodoModal />}
       {showAddModal === 'scorecard' && <AddScorecardModal />}
+      {showAddModal === 'vto' && <AddVTOModal />}
+      {showAddModal === 'meeting' && <AddMeetingModal />}
 
       {editingItem && editingItem.type === 'goal' && <EditGoalModal item={editingItem} />}
       {editingItem && editingItem.type === 'rock' && <EditRockModal item={editingItem} />}
       {editingItem && editingItem.type === 'issue' && <EditIssueModal item={editingItem} />}
       {editingItem && editingItem.type === 'todo' && <EditTodoModal item={editingItem} />}
       {editingItem && editingItem.type === 'scorecard' && <EditScorecardModal item={editingItem} />}
+      {editingItem && editingItem.type === 'vto' && <EditVTOModal item={editingItem} />}
+      {editingItem && editingItem.type === 'meeting' && <EditMeetingModal item={editingItem} />}
     </div>
   );
 };
