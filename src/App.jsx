@@ -51,7 +51,7 @@ const NinetyHub = () => {
       // Use relative URL in production, localhost in development
       const apiUrl = process.env.NODE_ENV === 'production' 
         ? '/api/tableau/kpis' 
-        : 'http://localhost:3001/api/tableau/kpis';
+        : 'http://localhost:3000/api/tableau/kpis';
       
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -714,7 +714,7 @@ const NinetyHub = () => {
           <div className="bg-red-500 bg-opacity-20 border border-red-300 rounded p-4">
             <p className="font-semibold">Error loading Tableau data:</p>
             <p className="text-sm mt-1">{tableauError}</p>
-            <p className="text-xs mt-2 opacity-75">Make sure the backend server is running on port 3001</p>
+            <p className="text-xs mt-2 opacity-75">Make sure the backend server is running on port 3000</p>
           </div>
         )}
         

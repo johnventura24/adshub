@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
 console.log('===================================');
@@ -68,7 +68,28 @@ app.post('/api/data/:type', (req, res) => {
 // Tableau KPI endpoint
 app.get('/api/tableau/kpis', (req, res) => {
   console.log('📊 Tableau KPIs requested');
-  res.json(mockTableauData);
+  // Return data in the format expected by frontend
+  res.json({
+    success: true,
+    data: {
+      leads: mockTableauData.leads || 16469,
+      prospects: 9881,
+      qualified: 4940,
+      proposals: 2470,
+      closed: 1811,
+      revenue: mockTableauData.revenue || 11123,
+      googleRevenue: 10967,
+      googleROAS: "1.20",
+      googleLeads: 15959,
+      googleProfit: 1799,
+      facebookRevenue: 156,
+      facebookROAS: "0.57",
+      facebookLeads: 510,
+      facebookProfit: -118,
+      lastUpdated: mockTableauData.lastUpdated || new Date().toISOString(),
+      source: 'server_data'
+    }
+  });
 });
 
 // Serve static files from React build
