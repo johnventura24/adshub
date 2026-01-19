@@ -32,7 +32,6 @@
   "devDependencies": {
     "concurrently": "^8.2.0"
   },
-  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": [
       "react-app"

@@ -48,10 +48,11 @@ const NinetyHub = () => {
     
     try {
       console.log('📊 Fetching Tableau KPIs...');
-      // Use relative URL - works in both development and production
-      // In development: React dev server proxies to backend on port 3000
-      // In production: Backend serves everything on port 3000
-      const apiUrl = '/api/tableau/kpis';
+      // Use relative URL in production (backend serves everything)
+      // Use direct URL in development (React dev server on 3001, backend on 3000)
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? '/api/tableau/kpis' 
+        : 'http://localhost:3000/api/tableau/kpis';
       
       const response = await fetch(apiUrl, {
         method: 'GET',
