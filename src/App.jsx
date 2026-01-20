@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Plane } from 'lucide-react';
+import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Eye } from 'lucide-react';
 import './App.css';
 
 const NinetyHub = () => {
@@ -512,38 +512,50 @@ const NinetyHub = () => {
     );
   };
 
-  // VTO Modals
+  // VTO (Vision/Traction Organizer) Modals
   const AddVTOModal = () => {
-    const [formData, setFormData] = useState({ employee: '', type: 'vacation', startDate: '', endDate: '', status: 'pending', addedBy: '', assignedTo: '' });
+    const [formData, setFormData] = useState({ category: 'vision', title: '', description: '', type: 'core-values', addedBy: '', assignedTo: '' });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Add New VTO</h3>
+            <h3 className="text-xl font-bold">Add to Vision/Traction Organizer</h3>
             <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
               <X className="w-5 h-5" />
             </button>
           </div>
-          <input className="w-full p-2 border rounded mb-3" placeholder="Employee Name" value={formData.employee} onChange={(e) => setFormData({...formData, employee: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="vision">Vision</option>
+            <option value="traction">Traction</option>
+          </select>
           <select className="w-full p-2 border rounded mb-3" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
-            <option value="vacation">Vacation</option>
-            <option value="sick">Sick Leave</option>
-            <option value="personal">Personal</option>
-            <option value="holiday">Holiday</option>
-            <option value="other">Other</option>
+            {formData.category === 'vision' ? (
+              <>
+                <option value="core-values">Core Values</option>
+                <option value="core-focus">Core Focus</option>
+                <option value="10-year-target">10-Year Target</option>
+                <option value="marketing-strategy">Marketing Strategy</option>
+                <option value="3-year-picture">3-Year Picture</option>
+                <option value="1-year-plan">1-Year Plan</option>
+                <option value="quarterly-priorities">Quarterly Priorities</option>
+              </>
+            ) : (
+              <>
+                <option value="rocks">Rocks (90-Day Priorities)</option>
+                <option value="quarterly-goals">Quarterly Goals</option>
+                <option value="weekly-meetings">Weekly Meeting Agendas</option>
+                <option value="scorecard">Scorecard Metrics</option>
+                <option value="accountability">Accountability Chart</option>
+              </>
+            )}
           </select>
-          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="Start Date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="End Date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} />
-          <select className="w-full p-2 border rounded mb-3" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="denied">Denied</option>
-          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="4" placeholder="Description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
           <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
-            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('vto', formData)}>Add VTO</button>
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('vto', formData)}>Add to VTO</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
           </div>
         </div>
@@ -558,26 +570,38 @@ const NinetyHub = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Edit VTO</h3>
+            <h3 className="text-xl font-bold">Edit Vision/Traction Organizer</h3>
             <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
               <X className="w-5 h-5" />
             </button>
           </div>
-          <input className="w-full p-2 border rounded mb-3" placeholder="Employee Name" value={formData.employee || ''} onChange={(e) => setFormData({...formData, employee: e.target.value})} />
-          <select className="w-full p-2 border rounded mb-3" value={formData.type || 'vacation'} onChange={(e) => setFormData({...formData, type: e.target.value})}>
-            <option value="vacation">Vacation</option>
-            <option value="sick">Sick Leave</option>
-            <option value="personal">Personal</option>
-            <option value="holiday">Holiday</option>
-            <option value="other">Other</option>
+          <select className="w-full p-2 border rounded mb-3" value={formData.category || 'vision'} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="vision">Vision</option>
+            <option value="traction">Traction</option>
           </select>
-          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="Start Date" value={formData.startDate || ''} onChange={(e) => setFormData({...formData, startDate: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-3" type="date" placeholder="End Date" value={formData.endDate || ''} onChange={(e) => setFormData({...formData, endDate: e.target.value})} />
-          <select className="w-full p-2 border rounded mb-3" value={formData.status || 'pending'} onChange={(e) => setFormData({...formData, status: e.target.value})}>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="denied">Denied</option>
+          <select className="w-full p-2 border rounded mb-3" value={formData.type || 'core-values'} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            {formData.category === 'vision' ? (
+              <>
+                <option value="core-values">Core Values</option>
+                <option value="core-focus">Core Focus</option>
+                <option value="10-year-target">10-Year Target</option>
+                <option value="marketing-strategy">Marketing Strategy</option>
+                <option value="3-year-picture">3-Year Picture</option>
+                <option value="1-year-plan">1-Year Plan</option>
+                <option value="quarterly-priorities">Quarterly Priorities</option>
+              </>
+            ) : (
+              <>
+                <option value="rocks">Rocks (90-Day Priorities)</option>
+                <option value="quarterly-goals">Quarterly Goals</option>
+                <option value="weekly-meetings">Weekly Meeting Agendas</option>
+                <option value="scorecard">Scorecard Metrics</option>
+                <option value="accountability">Accountability Chart</option>
+              </>
+            )}
           </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="4" placeholder="Description" value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
           <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
@@ -1244,48 +1268,36 @@ const NinetyHub = () => {
     </div>
   );
 
-  // VTO Component
-  const VTO = () => (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b flex justify-between items-center">
-        <h2 className="text-2xl font-bold">VTO (Vacation Time Off)</h2>
-        <button onClick={() => setShowAddModal('vto')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Add VTO
-        </button>
-      </div>
-      <div className="p-6">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Employee</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Start Date</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">End Date</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Added By</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vto.map((item, index) => (
-                <tr key={item.id} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                  <td className="px-4 py-3 text-sm font-medium">{item.employee || 'N/A'}</td>
-                  <td className="px-4 py-3 text-sm">{item.type || 'N/A'}</td>
-                  <td className="px-4 py-3 text-sm">{item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A'}</td>
-                  <td className="px-4 py-3 text-sm">{item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'}</td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`inline-block px-2 py-1 rounded text-xs ${
-                      item.status === 'approved' ? 'bg-green-100 text-green-700' : 
-                      item.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 
-                      'bg-gray-100 text-gray-700'
-                    }`}>
-                      {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'N/A'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{item.addedBy || 'N/A'}</td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex gap-2 justify-center">
+  // VTO (Vision/Traction Organizer) Component
+  const VTO = () => {
+    const visionItems = vto.filter(item => item.category === 'vision');
+    const tractionItems = vto.filter(item => item.category === 'traction');
+    
+    return (
+      <div className="space-y-6">
+        {/* Vision Section */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">Vision</h2>
+              <p className="text-sm text-gray-600 mt-1">Long-term direction and values</p>
+            </div>
+            <button onClick={() => setShowAddModal('vto')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add Vision Item
+            </button>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {visionItems.map((item) => (
+                <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded mb-2">
+                        {item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Vision'}
+                      </span>
+                      <h3 className="font-semibold text-lg">{item.title || 'Untitled'}</h3>
+                    </div>
+                    <div className="flex gap-1">
                       <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -1293,20 +1305,72 @@ const NinetyHub = () => {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">{item.description || 'No description'}</p>
+                  <div className="text-xs text-gray-500">
+                    <span>Added by: {item.addedBy || 'N/A'}</span>
+                    {item.assignedTo && <span className="ml-3">Assigned to: {item.assignedTo}</span>}
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-          {vto.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              No VTO requests yet. Click "Add VTO" to create your first vacation time off entry.
             </div>
-          )}
+            {visionItems.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No vision items yet. Click "Add Vision Item" to define your company's vision.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Traction Section */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">Traction</h2>
+              <p className="text-sm text-gray-600 mt-1">Quarterly goals and execution</p>
+            </div>
+            <button onClick={() => setShowAddModal('vto')} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add Traction Item
+            </button>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tractionItems.map((item) => (
+                <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded mb-2">
+                        {item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Traction'}
+                      </span>
+                      <h3 className="font-semibold text-lg">{item.title || 'Untitled'}</h3>
+                    </div>
+                    <div className="flex gap-1">
+                      <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">{item.description || 'No description'}</p>
+                  <div className="text-xs text-gray-500">
+                    <span>Added by: {item.addedBy || 'N/A'}</span>
+                    {item.assignedTo && <span className="ml-3">Assigned to: {item.assignedTo}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {tractionItems.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No traction items yet. Click "Add Traction Item" to set your quarterly priorities.
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Meetings Component
   const Meetings = () => (
@@ -1409,7 +1473,7 @@ const NinetyHub = () => {
               { id: 'issues', label: 'Issues', icon: AlertCircle },
               { id: 'todos', label: 'To-Dos', icon: CheckSquare },
               { id: 'scorecard', label: 'Scorecard', icon: BarChart3 },
-              { id: 'vto', label: 'VTO', icon: Plane },
+              { id: 'vto', label: 'VTO', icon: Eye },
               { id: 'meetings', label: 'Meetings', icon: Calendar }
             ].map(tab => {
               const Icon = tab.icon;
