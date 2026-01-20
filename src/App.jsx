@@ -4,6 +4,7 @@ import './App.css';
 
 const NinetyHub = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [vtoSubTab, setVtoSubTab] = useState('vision');
   const [editingItem, setEditingItem] = useState(null);
   const [showAddModal, setShowAddModal] = useState(null);
 
@@ -1693,485 +1694,369 @@ const NinetyHub = () => {
     const visionItems = vto.filter(item => item.category === 'vision');
     const tractionItems = vto.filter(item => item.category === 'traction');
     
+    // Helper function to render goals sections
+    const renderGoalsSections = () => (
+      <>
+        {/* 3-Year Goals Section */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">3-Year Picture</h2>
+              <p className="text-sm text-gray-600 mt-1">Long-term strategic goals</p>
+            </div>
+            <button onClick={() => setShowAddModal('goal3Year')} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add 3 Year Goal
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {goals3Year.map(goal => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-lg">{goal.title}</h3>
+                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingItem({ type: 'goal3Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete('goal3Year', goal.id)} className="text-red-600 hover:text-red-700">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {goal.target && goal.current !== undefined && (
+                  <>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div className="bg-purple-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                    </div>
+                  </>
+                )}
+                {(goal.addedBy || goal.assignedTo) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {goals3Year.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No 3-year goals yet. Click "Add 3 Year Goal" to create your first goal.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 1-Year Goals Section */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">1-Year Plan</h2>
+              <p className="text-sm text-gray-600 mt-1">Annual strategic objectives</p>
+            </div>
+            <button onClick={() => setShowAddModal('goal1Year')} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add 1 Year Goal
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {goals1Year.map(goal => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-lg">{goal.title}</h3>
+                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingItem({ type: 'goal1Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete('goal1Year', goal.id)} className="text-red-600 hover:text-red-700">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {goal.target && goal.current !== undefined && (
+                  <>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div className="bg-indigo-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                    </div>
+                  </>
+                )}
+                {(goal.addedBy || goal.assignedTo) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {goals1Year.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No 1-year goals yet. Click "Add 1 Year Goal" to create your first goal.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 90-Day Goals Section */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">90-Day Goals</h2>
+              <p className="text-sm text-gray-600 mt-1">Quarterly priorities and targets</p>
+            </div>
+            <button onClick={() => setShowAddModal('goal90Day')} className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add 90 Day Goal
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {goals90Day.map(goal => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-lg">{goal.title}</h3>
+                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingItem({ type: 'goal90Day', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete('goal90Day', goal.id)} className="text-red-600 hover:text-red-700">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {goal.target && goal.current !== undefined && (
+                  <>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div className="bg-teal-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                    </div>
+                  </>
+                )}
+                {(goal.addedBy || goal.assignedTo) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {goals90Day.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No 90-day goals yet. Click "Add 90 Day Goal" to create your first goal.
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    );
+    
     return (
       <div className="space-y-6">
-        {/* Vision Section */}
+        {/* Tab Navigation */}
         <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">Vision</h2>
-              <p className="text-sm text-gray-600 mt-1">Long-term direction and values</p>
+          <div className="border-b">
+            <div className="flex">
+              <button
+                onClick={() => setVtoSubTab('vision')}
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
+                  vtoSubTab === 'vision'
+                    ? 'bg-blue-600 text-white border-b-2 border-blue-600'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Vision
+              </button>
+              <button
+                onClick={() => setVtoSubTab('traction')}
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
+                  vtoSubTab === 'traction'
+                    ? 'bg-green-600 text-white border-b-2 border-green-600'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Traction
+              </button>
             </div>
-            <button onClick={() => setShowAddModal('vto')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add Vision Item
-            </button>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {visionItems.map((item) => (
-                <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded mb-2">
-                        {item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Vision'}
-                      </span>
-                      <h3 className="font-semibold text-lg">{item.title || 'Untitled'}</h3>
-                    </div>
-                    <div className="flex gap-1">
-                      <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">{item.description || 'No description'}</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Added by: {item.addedBy || 'N/A'}</span>
-                    {item.assignedTo && <span className="ml-3">Assigned to: {item.assignedTo}</span>}
-                  </div>
-                </div>
-              ))}
-            </div>
-            {visionItems.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No vision items yet. Click "Add Vision Item" to define your company's vision.
-              </div>
-            )}
           </div>
         </div>
 
-        {/* 3-Year Goals Section - Vision */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">3-Year Picture</h2>
-              <p className="text-sm text-gray-600 mt-1">Long-term strategic goals</p>
-            </div>
-            <button onClick={() => setShowAddModal('goal3Year')} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add 3 Year Goal
-            </button>
-          </div>
-          <div className="p-6 space-y-4">
-            {goals3Year.map(goal => (
-              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg">{goal.title}</h3>
-                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setEditingItem({ type: 'goal3Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete('goal3Year', goal.id)} className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+        {/* Vision Tab Content */}
+        {vtoSubTab === 'vision' && (
+          <div className="space-y-6">
+            {/* Vision Section */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold">Vision</h2>
+                  <p className="text-sm text-gray-600 mt-1">Long-term direction and values</p>
                 </div>
-                {goal.target && goal.current !== undefined && (
-                  <>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div className="bg-purple-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
-                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
-                    </div>
-                  </>
-                )}
-                {(goal.addedBy || goal.assignedTo) && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
-                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
-                  </div>
-                )}
+                <button onClick={() => setShowAddModal('vto')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> Add Vision Item
+                </button>
               </div>
-            ))}
-            {goals3Year.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No 3-year goals yet. Click "Add 3 Year Goal" to create your first goal.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 1-Year Goals Section - Vision */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">1-Year Plan</h2>
-              <p className="text-sm text-gray-600 mt-1">Annual strategic objectives</p>
-            </div>
-            <button onClick={() => setShowAddModal('goal1Year')} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add 1 Year Goal
-            </button>
-          </div>
-          <div className="p-6 space-y-4">
-            {goals1Year.map(goal => (
-              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg">{goal.title}</h3>
-                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setEditingItem({ type: 'goal1Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete('goal1Year', goal.id)} className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {visionItems.map((item) => (
+                    <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded mb-2">
+                            {item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Vision'}
+                          </span>
+                          <h3 className="font-semibold text-lg">{item.title || 'Untitled'}</h3>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{item.description || 'No description'}</p>
+                      <div className="text-xs text-gray-500">
+                        <span>Added by: {item.addedBy || 'N/A'}</span>
+                        {item.assignedTo && <span className="ml-3">Assigned to: {item.assignedTo}</span>}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                {goal.target && goal.current !== undefined && (
-                  <>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div className="bg-indigo-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
-                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
-                    </div>
-                  </>
-                )}
-                {(goal.addedBy || goal.assignedTo) && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
-                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                {visionItems.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    No vision items yet. Click "Add Vision Item" to define your company's vision.
                   </div>
                 )}
               </div>
-            ))}
-            {goals1Year.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No 1-year goals yet. Click "Add 1 Year Goal" to create your first goal.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 90-Day Goals Section - Vision */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">90-Day Goals</h2>
-              <p className="text-sm text-gray-600 mt-1">Quarterly priorities and targets</p>
             </div>
-            <button onClick={() => setShowAddModal('goal90Day')} className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add 90 Day Goal
-            </button>
+
+            {/* Goals Sections for Vision Tab */}
+            {renderGoalsSections()}
           </div>
-          <div className="p-6 space-y-4">
-            {goals90Day.map(goal => (
-              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg">{goal.title}</h3>
-                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setEditingItem({ type: 'goal90Day', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete('goal90Day', goal.id)} className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+        )}
+
+        {/* Traction Tab Content */}
+        {vtoSubTab === 'traction' && (
+          <div className="space-y-6">
+            {/* Traction Section */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold">Traction</h2>
+                  <p className="text-sm text-gray-600 mt-1">Quarterly goals and execution</p>
                 </div>
-                {goal.target && goal.current !== undefined && (
-                  <>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div className="bg-teal-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
-                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
-                    </div>
-                  </>
-                )}
-                {(goal.addedBy || goal.assignedTo) && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
-                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
-                  </div>
-                )}
+                <button onClick={() => setShowAddModal('vto')} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> Add Traction Item
+                </button>
               </div>
-            ))}
-            {goals90Day.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No 90-day goals yet. Click "Add 90 Day Goal" to create your first goal.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Traction Section */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">Traction</h2>
-              <p className="text-sm text-gray-600 mt-1">Quarterly goals and execution</p>
-            </div>
-            <button onClick={() => setShowAddModal('vto')} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add Traction Item
-            </button>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {tractionItems.map((item) => (
-                <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded mb-2">
-                        {item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Traction'}
-                      </span>
-                      <h3 className="font-semibold text-lg">{item.title || 'Untitled'}</h3>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tractionItems.map((item) => (
+                    <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded mb-2">
+                            {item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Traction'}
+                          </span>
+                          <h3 className="font-semibold text-lg">{item.title || 'Untitled'}</h3>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{item.description || 'No description'}</p>
+                      <div className="text-xs text-gray-500">
+                        <span>Added by: {item.addedBy || 'N/A'}</span>
+                        {item.assignedTo && <span className="ml-3">Assigned to: {item.assignedTo}</span>}
+                      </div>
                     </div>
-                    <div className="flex gap-1">
-                      <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">{item.description || 'No description'}</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Added by: {item.addedBy || 'N/A'}</span>
-                    {item.assignedTo && <span className="ml-3">Assigned to: {item.assignedTo}</span>}
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            {tractionItems.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No traction items yet. Click "Add Traction Item" to set your quarterly priorities.
+                {tractionItems.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    No traction items yet. Click "Add Traction Item" to set your quarterly priorities.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* 3-Year Goals Section - Traction */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">3-Year Picture</h2>
-              <p className="text-sm text-gray-600 mt-1">Long-term strategic goals</p>
             </div>
-            <button onClick={() => setShowAddModal('goal3Year')} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add 3 Year Goal
-            </button>
-          </div>
-          <div className="p-6 space-y-4">
-            {goals3Year.map(goal => (
-              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg">{goal.title}</h3>
-                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setEditingItem({ type: 'goal3Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete('goal3Year', goal.id)} className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+
+            {/* Goals Sections for Traction Tab */}
+            {renderGoalsSections()}
+
+            {/* Accountability Chart Section */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold">Accountability Chart</h2>
+                  <p className="text-sm text-gray-600 mt-1">Organizational structure and roles</p>
                 </div>
-                {goal.target && goal.current !== undefined && (
-                  <>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div className="bg-purple-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
-                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
-                    </div>
-                  </>
-                )}
-                {(goal.addedBy || goal.assignedTo) && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
-                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
-                  </div>
-                )}
+                <button onClick={() => setShowAddModal('accountability')} className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> Add Role
+                </button>
               </div>
-            ))}
-            {goals3Year.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No 3-year goals yet. Click "Add 3 Year Goal" to create your first goal.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 1-Year Goals Section - Traction */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">1-Year Plan</h2>
-              <p className="text-sm text-gray-600 mt-1">Annual strategic objectives</p>
-            </div>
-            <button onClick={() => setShowAddModal('goal1Year')} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add 1 Year Goal
-            </button>
-          </div>
-          <div className="p-6 space-y-4">
-            {goals1Year.map(goal => (
-              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg">{goal.title}</h3>
-                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setEditingItem({ type: 'goal1Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete('goal1Year', goal.id)} className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                {goal.target && goal.current !== undefined && (
-                  <>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div className="bg-indigo-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
-                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
-                    </div>
-                  </>
-                )}
-                {(goal.addedBy || goal.assignedTo) && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
-                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
-                  </div>
-                )}
-              </div>
-            ))}
-            {goals1Year.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No 1-year goals yet. Click "Add 1 Year Goal" to create your first goal.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 90-Day Goals Section - Traction */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">90-Day Goals</h2>
-              <p className="text-sm text-gray-600 mt-1">Quarterly priorities and targets</p>
-            </div>
-            <button onClick={() => setShowAddModal('goal90Day')} className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add 90 Day Goal
-            </button>
-          </div>
-          <div className="p-6 space-y-4">
-            {goals90Day.map(goal => (
-              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg">{goal.title}</h3>
-                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setEditingItem({ type: 'goal90Day', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete('goal90Day', goal.id)} className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                {goal.target && goal.current !== undefined && (
-                  <>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                      <div className="bg-teal-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
-                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
-                    </div>
-                  </>
-                )}
-                {(goal.addedBy || goal.assignedTo) && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
-                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
-                  </div>
-                )}
-              </div>
-            ))}
-            {goals90Day.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No 90-day goals yet. Click "Add 90 Day Goal" to create your first goal.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Accountability Chart Section */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">Accountability Chart</h2>
-              <p className="text-sm text-gray-600 mt-1">Organizational structure and roles</p>
-            </div>
-            <button onClick={() => setShowAddModal('accountability')} className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Add Role
-            </button>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {accountabilityChart.map((role) => (
-                <div key={role.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-1">{role.roleName || 'Untitled Role'}</h3>
-                      {role.personName && (
-                        <p className="text-sm text-gray-700 font-medium">{role.personName}</p>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {accountabilityChart.map((role) => (
+                    <div key={role.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg mb-1">{role.roleName || 'Untitled Role'}</h3>
+                          {role.personName && (
+                            <p className="text-sm text-gray-700 font-medium">{role.personName}</p>
+                          )}
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => setEditingItem({ type: 'accountability', id: role.id, data: role })} className="text-blue-600 hover:text-blue-700">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('accountability', role.id)} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      {role.responsibilities && (
+                        <div className="mt-3">
+                          <p className="text-xs font-semibold text-gray-600 mb-1">Key Responsibilities:</p>
+                          <p className="text-sm text-gray-600">{role.responsibilities}</p>
+                        </div>
+                      )}
+                      {(role.addedBy || role.department) && (
+                        <div className="text-xs text-gray-500 mt-3">
+                          {role.addedBy && <span>Added by: {role.addedBy}</span>}
+                          {role.department && <span className="ml-3">Department: {role.department}</span>}
+                        </div>
                       )}
                     </div>
-                    <div className="flex gap-1">
-                      <button onClick={() => setEditingItem({ type: 'accountability', id: role.id, data: role })} className="text-blue-600 hover:text-blue-700">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleDelete('accountability', role.id)} className="text-red-600 hover:text-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  {role.responsibilities && (
-                    <div className="mt-3">
-                      <p className="text-xs font-semibold text-gray-600 mb-1">Key Responsibilities:</p>
-                      <p className="text-sm text-gray-600">{role.responsibilities}</p>
-                    </div>
-                  )}
-                  {(role.addedBy || role.department) && (
-                    <div className="text-xs text-gray-500 mt-3">
-                      {role.addedBy && <span>Added by: {role.addedBy}</span>}
-                      {role.department && <span className="ml-3">Department: {role.department}</span>}
-                    </div>
-                  )}
+                  ))}
                 </div>
-              ))}
-            </div>
-            {accountabilityChart.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No roles defined yet. Click "Add Role" to create your accountability chart.
+                {accountabilityChart.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    No roles defined yet. Click "Add Role" to create your accountability chart.
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
