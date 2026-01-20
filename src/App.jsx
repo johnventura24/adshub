@@ -15,6 +15,9 @@ const NinetyHub = () => {
   const [scorecard, setScorecard] = useState([]);
   const [vto, setVto] = useState([]);
   const [meetings, setMeetings] = useState([]);
+  const [goals3Year, setGoals3Year] = useState([]);
+  const [goals1Year, setGoals1Year] = useState([]);
+  const [goals90Day, setGoals90Day] = useState([]);
   
   // Tableau KPIs state
   const [tableauKPIs, setTableauKPIs] = useState(null);
@@ -133,6 +136,10 @@ const NinetyHub = () => {
         { id: 3, metric: 'Team Productivity', target: 85, actual: 88, trend: 'up' }
       ]));
       
+      setGoals3Year(loadData('goals3Year', []));
+      setGoals1Year(loadData('goals1Year', []));
+      setGoals90Day(loadData('goals90Day', []));
+      
       setVto(loadData('vto', [
         // Core Values
         { id: 1, category: 'vision', type: 'core-values', title: 'Live with Integrity', description: 'At Adsync we LIVE WITH INTEGRITY. We show up all day, everyday with the best intentions and a strong moral compass. We do what we say we\'re going to do and we do the right thing even when it\'s not easy. We wear our hearts on our sleeve and were someone you can always rely on.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
@@ -184,6 +191,9 @@ const NinetyHub = () => {
   useEffect(() => { saveData('scorecard', scorecard); }, [scorecard]);
   useEffect(() => { saveData('vto', vto); }, [vto]);
   useEffect(() => { saveData('meetings', meetings); }, [meetings]);
+  useEffect(() => { saveData('goals3Year', goals3Year); }, [goals3Year]);
+  useEffect(() => { saveData('goals1Year', goals1Year); }, [goals1Year]);
+  useEffect(() => { saveData('goals90Day', goals90Day); }, [goals90Day]);
 
   // CRUD Operations
   const handleAdd = (type, data) => {
@@ -196,6 +206,9 @@ const NinetyHub = () => {
       case 'scorecard': setScorecard([...scorecard, newItem]); break;
       case 'vto': setVto([...vto, newItem]); break;
       case 'meeting': setMeetings([...meetings, newItem]); break;
+      case 'goal3Year': setGoals3Year([...goals3Year, newItem]); break;
+      case 'goal1Year': setGoals1Year([...goals1Year, newItem]); break;
+      case 'goal90Day': setGoals90Day([...goals90Day, newItem]); break;
       default: break;
     }
     setShowAddModal(null);
@@ -210,6 +223,9 @@ const NinetyHub = () => {
       case 'scorecard': setScorecard(scorecard.map(s => s.id === id ? { ...s, ...data } : s)); break;
       case 'vto': setVto(vto.map(v => v.id === id ? { ...v, ...data } : v)); break;
       case 'meeting': setMeetings(meetings.map(m => m.id === id ? { ...m, ...data } : m)); break;
+      case 'goal3Year': setGoals3Year(goals3Year.map(g => g.id === id ? { ...g, ...data } : g)); break;
+      case 'goal1Year': setGoals1Year(goals1Year.map(g => g.id === id ? { ...g, ...data } : g)); break;
+      case 'goal90Day': setGoals90Day(goals90Day.map(g => g.id === id ? { ...g, ...data } : g)); break;
       default: break;
     }
     setEditingItem(null);
@@ -225,6 +241,9 @@ const NinetyHub = () => {
         case 'scorecard': setScorecard(scorecard.filter(s => s.id !== id)); break;
         case 'vto': setVto(vto.filter(v => v.id !== id)); break;
         case 'meeting': setMeetings(meetings.filter(m => m.id !== id)); break;
+        case 'goal3Year': setGoals3Year(goals3Year.filter(g => g.id !== id)); break;
+        case 'goal1Year': setGoals1Year(goals1Year.filter(g => g.id !== id)); break;
+        case 'goal90Day': setGoals90Day(goals90Day.filter(g => g.id !== id)); break;
         default: break;
       }
     }
@@ -278,6 +297,171 @@ const NinetyHub = () => {
           <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('goal', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 3 Year Goal Modals
+  const AddGoal3YearModal = () => {
+    const [formData, setFormData] = useState({ title: '', description: '', target: 0, current: 0, addedBy: '', assignedTo: '' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add 3 Year Goal</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="3" placeholder="Description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target (optional)" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress (optional)" value={formData.current} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700" onClick={() => handleAdd('goal3Year', formData)}>Add Goal</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditGoal3YearModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit 3 Year Goal</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="3" placeholder="Description" value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target (optional)" value={formData.target || 0} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress (optional)" value={formData.current || 0} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700" onClick={() => handleEdit('goal3Year', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 1 Year Goal Modals
+  const AddGoal1YearModal = () => {
+    const [formData, setFormData] = useState({ title: '', description: '', target: 0, current: 0, addedBy: '', assignedTo: '' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add 1 Year Goal</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="3" placeholder="Description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target (optional)" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress (optional)" value={formData.current} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700" onClick={() => handleAdd('goal1Year', formData)}>Add Goal</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditGoal1YearModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit 1 Year Goal</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="3" placeholder="Description" value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target (optional)" value={formData.target || 0} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress (optional)" value={formData.current || 0} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700" onClick={() => handleEdit('goal1Year', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 90 Day Goal Modals
+  const AddGoal90DayModal = () => {
+    const [formData, setFormData] = useState({ title: '', description: '', target: 0, current: 0, addedBy: '', assignedTo: '' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add 90 Day Goal</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="3" placeholder="Description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target (optional)" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress (optional)" value={formData.current} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-teal-600 text-white py-2 rounded hover:bg-teal-700" onClick={() => handleAdd('goal90Day', formData)}>Add Goal</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditGoal90DayModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit 90 Day Goal</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3" rows="3" placeholder="Description" value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target (optional)" value={formData.target || 0} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress (optional)" value={formData.current || 0} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-teal-600 text-white py-2 rounded hover:bg-teal-700" onClick={() => handleEdit('goal90Day', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
           </div>
         </div>
@@ -1085,6 +1269,168 @@ const NinetyHub = () => {
     </div>
   );
 
+  // 3 Year Goals Component
+  const Goals3Year = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">3 Year Goals</h2>
+        <button onClick={() => setShowAddModal('goal3Year')} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add 3 Year Goal
+        </button>
+      </div>
+      <div className="p-6 space-y-4">
+        {goals3Year.map(goal => (
+          <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="font-bold text-lg">{goal.title}</h3>
+                {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingItem({ type: 'goal3Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button onClick={() => handleDelete('goal3Year', goal.id)} className="text-red-600 hover:text-red-700">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            {goal.target && goal.current !== undefined && (
+              <>
+                <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                  <div className="bg-purple-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                  <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                </div>
+              </>
+            )}
+            {(goal.addedBy || goal.assignedTo) && (
+              <div className="text-xs text-gray-500 mt-2">
+                {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+              </div>
+            )}
+          </div>
+        ))}
+        {goals3Year.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No 3-year goals yet. Click "Add 3 Year Goal" to create your first goal.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // 1 Year Goals Component
+  const Goals1Year = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">1 Year Goals</h2>
+        <button onClick={() => setShowAddModal('goal1Year')} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add 1 Year Goal
+        </button>
+      </div>
+      <div className="p-6 space-y-4">
+        {goals1Year.map(goal => (
+          <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="font-bold text-lg">{goal.title}</h3>
+                {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingItem({ type: 'goal1Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button onClick={() => handleDelete('goal1Year', goal.id)} className="text-red-600 hover:text-red-700">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            {goal.target && goal.current !== undefined && (
+              <>
+                <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                  <div className="bg-indigo-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                  <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                </div>
+              </>
+            )}
+            {(goal.addedBy || goal.assignedTo) && (
+              <div className="text-xs text-gray-500 mt-2">
+                {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+              </div>
+            )}
+          </div>
+        ))}
+        {goals1Year.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No 1-year goals yet. Click "Add 1 Year Goal" to create your first goal.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // 90 Day Goals Component
+  const Goals90Day = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">90 Day Goals</h2>
+        <button onClick={() => setShowAddModal('goal90Day')} className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add 90 Day Goal
+        </button>
+      </div>
+      <div className="p-6 space-y-4">
+        {goals90Day.map(goal => (
+          <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="font-bold text-lg">{goal.title}</h3>
+                {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingItem({ type: 'goal90Day', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button onClick={() => handleDelete('goal90Day', goal.id)} className="text-red-600 hover:text-red-700">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            {goal.target && goal.current !== undefined && (
+              <>
+                <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                  <div className="bg-teal-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                  <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                </div>
+              </>
+            )}
+            {(goal.addedBy || goal.assignedTo) && (
+              <div className="text-xs text-gray-500 mt-2">
+                {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+              </div>
+            )}
+          </div>
+        ))}
+        {goals90Day.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No 90-day goals yet. Click "Add 90 Day Goal" to create your first goal.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   // Rocks Component
   const Rocks = () => (
     <div className="bg-white rounded-lg shadow">
@@ -1455,35 +1801,28 @@ const NinetyHub = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Adsync Media Hub</h1>
-                <p className="text-sm text-gray-600">90-Day Operating System with Live Tableau KPIs</p>
-              </div>
+    <div className="min-h-screen bg-gray-100 flex">
+      {/* Sidebar Navigation */}
+      <aside className="w-64 bg-white shadow-lg fixed h-full overflow-y-auto">
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <BarChart3 className="w-6 h-6 text-white" />
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Users className="w-4 h-4" />
-              <span>Team Dashboard</span>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">Adsync Media Hub</h1>
+              <p className="text-xs text-gray-600">90-Day Operating System</p>
             </div>
           </div>
         </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1">
+        <nav className="p-4">
+          <div className="space-y-1">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
               { id: 'goals', label: 'Goals', icon: Target },
+              { id: 'goals3Year', label: '3 Year Goals', icon: Target },
+              { id: 'goals1Year', label: '1 Year Goals', icon: Target },
+              { id: 'goals90Day', label: '90 Day Goals', icon: Target },
               { id: 'rocks', label: 'Rocks', icon: TrendingUp },
               { id: 'issues', label: 'Issues', icon: AlertCircle },
               { id: 'todos', label: 'To-Dos', icon: CheckSquare },
@@ -1496,35 +1835,71 @@ const NinetyHub = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     activeTab === tab.id
-                      ? 'border-blue-600 text-blue-600 font-medium'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      ? 'bg-blue-600 text-white font-medium'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {tab.label}
+                  <Icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
           </div>
-        </div>
-      </nav>
+        </nav>
+      </aside>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'goals' && <Goals />}
-        {activeTab === 'rocks' && <Rocks />}
-        {activeTab === 'issues' && <Issues />}
-        {activeTab === 'todos' && <Todos />}
-        {activeTab === 'scorecard' && <Scorecard />}
-        {activeTab === 'vto' && <VTO />}
-        {activeTab === 'meetings' && <Meetings />}
-      </main>
+      {/* Main Content Area */}
+      <div className="flex-1 ml-64">
+        {/* Header */}
+        <header className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {activeTab === 'dashboard' && 'Dashboard'}
+                  {activeTab === 'goals' && 'Goals'}
+                  {activeTab === 'goals3Year' && '3 Year Goals'}
+                  {activeTab === 'goals1Year' && '1 Year Goals'}
+                  {activeTab === 'goals90Day' && '90 Day Goals'}
+                  {activeTab === 'rocks' && 'Rocks'}
+                  {activeTab === 'issues' && 'Issues'}
+                  {activeTab === 'todos' && 'To-Dos'}
+                  {activeTab === 'scorecard' && 'Scorecard'}
+                  {activeTab === 'vto' && 'Vision/Traction Organizer'}
+                  {activeTab === 'meetings' && 'Meetings'}
+                </h2>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Users className="w-4 h-4" />
+                <span>Team Dashboard</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="p-6">
+          {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'goals' && <Goals />}
+          {activeTab === 'goals3Year' && <Goals3Year />}
+          {activeTab === 'goals1Year' && <Goals1Year />}
+          {activeTab === 'goals90Day' && <Goals90Day />}
+          {activeTab === 'rocks' && <Rocks />}
+          {activeTab === 'issues' && <Issues />}
+          {activeTab === 'todos' && <Todos />}
+          {activeTab === 'scorecard' && <Scorecard />}
+          {activeTab === 'vto' && <VTO />}
+          {activeTab === 'meetings' && <Meetings />}
+        </main>
+      </div>
 
       {/* Modals */}
       {showAddModal === 'goal' && <AddGoalModal />}
+      {showAddModal === 'goal3Year' && <AddGoal3YearModal />}
+      {showAddModal === 'goal1Year' && <AddGoal1YearModal />}
+      {showAddModal === 'goal90Day' && <AddGoal90DayModal />}
       {showAddModal === 'rock' && <AddRockModal />}
       {showAddModal === 'issue' && <AddIssueModal />}
       {showAddModal === 'todo' && <AddTodoModal />}
@@ -1533,6 +1908,9 @@ const NinetyHub = () => {
       {showAddModal === 'meeting' && <AddMeetingModal />}
 
       {editingItem && editingItem.type === 'goal' && <EditGoalModal item={editingItem} />}
+      {editingItem && editingItem.type === 'goal3Year' && <EditGoal3YearModal item={editingItem} />}
+      {editingItem && editingItem.type === 'goal1Year' && <EditGoal1YearModal item={editingItem} />}
+      {editingItem && editingItem.type === 'goal90Day' && <EditGoal90DayModal item={editingItem} />}
       {editingItem && editingItem.type === 'rock' && <EditRockModal item={editingItem} />}
       {editingItem && editingItem.type === 'issue' && <EditIssueModal item={editingItem} />}
       {editingItem && editingItem.type === 'todo' && <EditTodoModal item={editingItem} />}
