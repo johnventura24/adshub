@@ -1742,7 +1742,7 @@ const NinetyHub = () => {
           </div>
         </div>
 
-        {/* 3-Year Goals Section */}
+        {/* 3-Year Goals Section - Vision */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b flex justify-between items-center">
             <div>
@@ -1797,7 +1797,7 @@ const NinetyHub = () => {
           </div>
         </div>
 
-        {/* 1-Year Goals Section */}
+        {/* 1-Year Goals Section - Vision */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b flex justify-between items-center">
             <div>
@@ -1852,7 +1852,7 @@ const NinetyHub = () => {
           </div>
         </div>
 
-        {/* 90-Day Goals Section */}
+        {/* 90-Day Goals Section - Vision */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b flex justify-between items-center">
             <div>
@@ -1949,6 +1949,171 @@ const NinetyHub = () => {
             {tractionItems.length === 0 && (
               <div className="text-center py-12 text-gray-500">
                 No traction items yet. Click "Add Traction Item" to set your quarterly priorities.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 3-Year Goals Section - Traction */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">3-Year Picture</h2>
+              <p className="text-sm text-gray-600 mt-1">Long-term strategic goals</p>
+            </div>
+            <button onClick={() => setShowAddModal('goal3Year')} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add 3 Year Goal
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {goals3Year.map(goal => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-lg">{goal.title}</h3>
+                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingItem({ type: 'goal3Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete('goal3Year', goal.id)} className="text-red-600 hover:text-red-700">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {goal.target && goal.current !== undefined && (
+                  <>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div className="bg-purple-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                    </div>
+                  </>
+                )}
+                {(goal.addedBy || goal.assignedTo) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {goals3Year.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No 3-year goals yet. Click "Add 3 Year Goal" to create your first goal.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 1-Year Goals Section - Traction */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">1-Year Plan</h2>
+              <p className="text-sm text-gray-600 mt-1">Annual strategic objectives</p>
+            </div>
+            <button onClick={() => setShowAddModal('goal1Year')} className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add 1 Year Goal
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {goals1Year.map(goal => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-lg">{goal.title}</h3>
+                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingItem({ type: 'goal1Year', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete('goal1Year', goal.id)} className="text-red-600 hover:text-red-700">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {goal.target && goal.current !== undefined && (
+                  <>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div className="bg-indigo-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                    </div>
+                  </>
+                )}
+                {(goal.addedBy || goal.assignedTo) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {goals1Year.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No 1-year goals yet. Click "Add 1 Year Goal" to create your first goal.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 90-Day Goals Section - Traction */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">90-Day Goals</h2>
+              <p className="text-sm text-gray-600 mt-1">Quarterly priorities and targets</p>
+            </div>
+            <button onClick={() => setShowAddModal('goal90Day')} className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add 90 Day Goal
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            {goals90Day.map(goal => (
+              <div key={goal.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-bold text-lg">{goal.title}</h3>
+                    {goal.description && <p className="text-sm text-gray-600 mt-1">{goal.description}</p>}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingItem({ type: 'goal90Day', id: goal.id, data: goal })} className="text-blue-600 hover:text-blue-700">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDelete('goal90Day', goal.id)} className="text-red-600 hover:text-red-700">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {goal.target && goal.current !== undefined && (
+                  <>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                      <div className="bg-teal-600 h-3 rounded-full transition-all" style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }} />
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{goal.current.toLocaleString()} / {goal.target.toLocaleString()}</span>
+                      <span className="font-bold">{Math.round((goal.current / goal.target) * 100)}%</span>
+                    </div>
+                  </>
+                )}
+                {(goal.addedBy || goal.assignedTo) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {goal.addedBy && <span>Added by: {goal.addedBy}</span>}
+                    {goal.assignedTo && <span className="ml-3">Assigned to: {goal.assignedTo}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {goals90Day.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                No 90-day goals yet. Click "Add 90 Day Goal" to create your first goal.
               </div>
             )}
           </div>
@@ -2098,9 +2263,6 @@ const NinetyHub = () => {
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
               { id: 'goals', label: 'Goals', icon: Target },
-              { id: 'goals3Year', label: '3 Year Goals', icon: Target },
-              { id: 'goals1Year', label: '1 Year Goals', icon: Target },
-              { id: 'goals90Day', label: '90 Day Goals', icon: Target },
               { id: 'rocks', label: 'Rocks', icon: TrendingUp },
               { id: 'issues', label: 'Issues', icon: AlertCircle },
               { id: 'todos', label: 'To-Dos', icon: CheckSquare },
@@ -2138,9 +2300,6 @@ const NinetyHub = () => {
                 <h2 className="text-xl font-bold text-gray-900">
                   {activeTab === 'dashboard' && 'Dashboard'}
                   {activeTab === 'goals' && 'Goals'}
-                  {activeTab === 'goals3Year' && '3 Year Goals'}
-                  {activeTab === 'goals1Year' && '1 Year Goals'}
-                  {activeTab === 'goals90Day' && '90 Day Goals'}
                   {activeTab === 'rocks' && 'Rocks'}
                   {activeTab === 'issues' && 'Issues'}
                   {activeTab === 'todos' && 'To-Dos'}
@@ -2161,9 +2320,6 @@ const NinetyHub = () => {
         <main className="p-6">
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'goals' && <Goals />}
-          {activeTab === 'goals3Year' && <Goals3Year />}
-          {activeTab === 'goals1Year' && <Goals1Year />}
-          {activeTab === 'goals90Day' && <Goals90Day />}
           {activeTab === 'rocks' && <Rocks />}
           {activeTab === 'issues' && <Issues />}
           {activeTab === 'todos' && <Todos />}
