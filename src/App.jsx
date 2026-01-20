@@ -2255,6 +2255,7 @@ const NinetyHub = () => {
               { id: 'todos', label: 'To-Dos', icon: CheckSquare },
               { id: 'scorecard', label: 'Scorecard', icon: BarChart3 },
               { id: 'vto', label: 'VTO', icon: Eye },
+              { id: 'accountability', label: 'Accountability Chart', icon: Users },
               { id: 'meetings', label: 'Meetings', icon: Calendar }
             ].map(tab => {
               const Icon = tab.icon;
