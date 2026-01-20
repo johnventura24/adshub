@@ -1896,16 +1896,6 @@ const NinetyHub = () => {
               >
                 Traction
               </button>
-              <button
-                onClick={() => setVtoSubTab('accountability')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
-                  vtoSubTab === 'accountability'
-                    ? 'bg-orange-600 text-white border-b-2 border-orange-600'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                Accountability Chart
-              </button>
             </div>
           </div>
         </div>
@@ -2020,31 +2010,34 @@ const NinetyHub = () => {
           </div>
         )}
 
-        {/* Accountability Chart Tab Content */}
-        {vtoSubTab === 'accountability' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow">
-              <div className="p-6 border-b flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold">Accountability Chart</h2>
-                  <p className="text-sm text-gray-600 mt-1">Organizational structure and hierarchy</p>
-                </div>
-                <button onClick={() => setShowAddModal('accountability')} className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 flex items-center gap-2">
-                  <Plus className="w-4 h-4" /> Add Role
-                </button>
-              </div>
-              <div className="p-6">
-                {accountabilityChart.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    No roles defined yet. Click "Add Role" to create your accountability chart. Start with the CEO role.
-                  </div>
-                ) : (
-                  <OrgChart roles={accountabilityChart} onEdit={(role) => setEditingItem({ type: 'accountability', id: role.id, data: role })} onDelete={(id) => handleDelete('accountability', id)} />
-                )}
-              </div>
+      </div>
+    );
+  };
+
+  // Accountability Chart Component
+  const AccountabilityChart = () => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">Accountability Chart</h2>
+              <p className="text-sm text-gray-600 mt-1">Organizational structure and hierarchy</p>
             </div>
+            <button onClick={() => setShowAddModal('accountability')} className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add Role
+            </button>
           </div>
-        )}
+          <div className="p-6">
+            {accountabilityChart.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                No roles defined yet. Click "Add Role" to create your accountability chart. Start with the CEO role.
+              </div>
+            ) : (
+              <OrgChart roles={accountabilityChart} onEdit={(role) => setEditingItem({ type: 'accountability', id: role.id, data: role })} onDelete={(id) => handleDelete('accountability', id)} />
+            )}
+          </div>
+        </div>
       </div>
     );
   };
@@ -2299,6 +2292,7 @@ const NinetyHub = () => {
                   {activeTab === 'todos' && 'To-Dos'}
                   {activeTab === 'scorecard' && 'Scorecard'}
                   {activeTab === 'vto' && 'Vision/Traction Organizer'}
+                  {activeTab === 'accountability' && 'Accountability Chart'}
                   {activeTab === 'meetings' && 'Meetings'}
                 </h2>
               </div>
@@ -2319,6 +2313,7 @@ const NinetyHub = () => {
           {activeTab === 'todos' && <Todos />}
           {activeTab === 'scorecard' && <Scorecard />}
           {activeTab === 'vto' && <VTO />}
+          {activeTab === 'accountability' && <AccountabilityChart />}
           {activeTab === 'meetings' && <Meetings />}
         </main>
       </div>
