@@ -313,33 +313,6 @@ const NinetyHub = () => {
   const { AddModal: AddGoal1YearModal, EditModal: EditGoal1YearModal } = createGoalModal('Add New 1 Year Goal', 'goal1Year', 'goal1Year', false);
   const { AddModal: AddGoal90DayModal, EditModal: EditGoal90DayModal } = createGoalModal('Add New 90 Day Goal', 'goal90Day', 'goal90Day', false);
 
-  const EditGoalModal = ({ item }) => {
-    const [formData, setFormData] = useState(item.data);
-    
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold">Edit Goal</h3>
-            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <input className="w-full p-2 border rounded mb-3" placeholder="Goal Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Target" value={formData.target} onChange={(e) => setFormData({...formData, target: parseInt(e.target.value) || 0})} />
-          <input className="w-full p-2 border rounded mb-3" type="number" placeholder="Current Progress" value={formData.current} onChange={(e) => setFormData({...formData, current: parseInt(e.target.value) || 0})} />
-          <input className="w-full p-2 border rounded mb-3" placeholder="Quarter" value={formData.quarter} onChange={(e) => setFormData({...formData, quarter: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-3" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
-          <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
-          <div className="flex gap-2">
-            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('goal', item.id, formData)}>Save Changes</button>
-            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const AddRockModal = () => {
     const [formData, setFormData] = useState({ title: '', owner: '', dueDate: '', status: 'on-track', progress: 0, addedBy: '', assignedTo: '' });
     
