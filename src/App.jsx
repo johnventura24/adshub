@@ -133,7 +133,22 @@ const NinetyHub = () => {
         { id: 3, metric: 'Team Productivity', target: 85, actual: 88, trend: 'up' }
       ]));
       
-      setVto(loadData('vto', []));
+      setVto(loadData('vto', [
+        // Core Values
+        { id: 1, category: 'vision', type: 'core-values', title: 'Live with Integrity', description: 'At Adsync we LIVE WITH INTEGRITY. We show up all day, everyday with the best intentions and a strong moral compass. We do what we say we\'re going to do and we do the right thing even when it\'s not easy. We wear our hearts on our sleeve and were someone you can always rely on.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        { id: 2, category: 'vision', type: 'core-values', title: 'Be Achievement Hungry', description: 'We ARE ACHIEVEMENT HUNGRY. We have a passion for excellence and strong drive to be the best at what we do. We NEVER give up and were relentlessly on the pursuit of results, smashing goals, and becoming the very best version of ourselves.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        { id: 3, category: 'vision', type: 'core-values', title: 'Take Massive Action', description: 'We TAKE MASSIVE ACTION. We are pioneers, we do not follow. We are bold with our actions and always find ways to do "the impossible." We are clever problem solvers; resourceful and innovate with our solutions. Were quick to adapt but with a fanatical attention to detail. We do not leave for tomorrow, what can be done today.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        { id: 4, category: 'vision', type: 'core-values', title: 'Take Extreme Ownership', description: 'We TAKE EXTREME OWNERSHIP. We take pride in what we do. We take responsibility for our actions or inactions, and we hold each other accountable to the highest regards.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        { id: 5, category: 'vision', type: 'core-values', title: 'Be Compassionate', description: 'AND We ARE COMPASSIONATE. We truly give a damn and are open and understanding of others. We listen to everyones perspective and treat all with respect.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        // Core Focus
+        { id: 6, category: 'vision', type: 'core-focus', title: 'Purpose/Cause/Passion', description: 'Connect people with life changing solutions', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        { id: 7, category: 'vision', type: 'core-focus', title: 'Niche', description: 'We acquire high intent customers.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        // 10 Year Target
+        { id: 8, category: 'vision', type: '10-year-target', title: '10 Year Target™', description: 'By 2033, Be The Top Online Customer Acquisition Company In Our Core Verticals With Over $1 Billion In Combined Revenue.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        // Go to Market Strategy
+        { id: 9, category: 'vision', type: 'marketing-strategy', title: 'Target Market', description: 'Three Uniques:\n• Consistently below industry standard CPAs\n• All traffic and media is generated in-house and CMS compliant\n• High consistent volume - with preferrencial payment terms', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
+        { id: 10, category: 'vision', type: 'marketing-strategy', title: 'Proven Process', description: 'Guarantee: We will lower your CPA by 20% guaranteed.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' }
+      ]));
       setMeetings(loadData('meetings', []));
       
       // Fetch Tableau KPIs on mount (with slight delay to ensure everything is loaded)
