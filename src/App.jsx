@@ -941,6 +941,12 @@ const NinetyHub = () => {
           </div>
           <input className="w-full p-2 border rounded mb-3" placeholder="Role Name" value={formData.roleName || ''} onChange={(e) => setFormData({...formData, roleName: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" placeholder="Person Name" value={formData.personName || ''} onChange={(e) => setFormData({...formData, personName: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.reportsTo || ''} onChange={(e) => setFormData({...formData, reportsTo: e.target.value})}>
+            <option value="">Reports To (Select Manager)</option>
+            {accountabilityChart.filter(role => role.id !== item.id).map(role => (
+              <option key={role.id} value={role.id}>{role.roleName || 'Untitled Role'}</option>
+            ))}
+          </select>
           <textarea className="w-full p-2 border rounded mb-3" rows="4" placeholder="Key Responsibilities" value={formData.responsibilities || ''} onChange={(e) => setFormData({...formData, responsibilities: e.target.value})} />
           <input className="w-full p-2 border rounded mb-3" placeholder="Department" value={formData.department || ''} onChange={(e) => setFormData({...formData, department: e.target.value})} />
           <input className="w-full p-2 border rounded mb-4" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
@@ -1890,6 +1896,16 @@ const NinetyHub = () => {
               >
                 Traction
               </button>
+              <button
+                onClick={() => setVtoSubTab('accountability')}
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
+                  vtoSubTab === 'accountability'
+                    ? 'bg-orange-600 text-white border-b-2 border-orange-600'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Accountability Chart
+              </button>
             </div>
           </div>
         </div>
@@ -2001,62 +2017,155 @@ const NinetyHub = () => {
 
             {/* Goals Sections for Traction Tab */}
             {renderGoalsSections()}
+          </div>
+        )}
 
-            {/* Accountability Chart Section */}
+        {/* Accountability Chart Tab Content */}
+        {vtoSubTab === 'accountability' && (
+          <div className="space-y-6">
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-bold">Accountability Chart</h2>
-                  <p className="text-sm text-gray-600 mt-1">Organizational structure and roles</p>
+                  <p className="text-sm text-gray-600 mt-1">Organizational structure and hierarchy</p>
                 </div>
                 <button onClick={() => setShowAddModal('accountability')} className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 flex items-center gap-2">
                   <Plus className="w-4 h-4" /> Add Role
                 </button>
               </div>
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {accountabilityChart.map((role) => (
-                    <div key={role.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg mb-1">{role.roleName || 'Untitled Role'}</h3>
-                          {role.personName && (
-                            <p className="text-sm text-gray-700 font-medium">{role.personName}</p>
-                          )}
-                        </div>
-                        <div className="flex gap-1">
-                          <button onClick={() => setEditingItem({ type: 'accountability', id: role.id, data: role })} className="text-blue-600 hover:text-blue-700">
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => handleDelete('accountability', role.id)} className="text-red-600 hover:text-red-700">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                      {role.responsibilities && (
-                        <div className="mt-3">
-                          <p className="text-xs font-semibold text-gray-600 mb-1">Key Responsibilities:</p>
-                          <p className="text-sm text-gray-600">{role.responsibilities}</p>
-                        </div>
-                      )}
-                      {(role.addedBy || role.department) && (
-                        <div className="text-xs text-gray-500 mt-3">
-                          {role.addedBy && <span>Added by: {role.addedBy}</span>}
-                          {role.department && <span className="ml-3">Department: {role.department}</span>}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {accountabilityChart.length === 0 && (
+                {accountabilityChart.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
-                    No roles defined yet. Click "Add Role" to create your accountability chart.
+                    No roles defined yet. Click "Add Role" to create your accountability chart. Start with the CEO role.
                   </div>
+                ) : (
+                  <OrgChart roles={accountabilityChart} onEdit={(role) => setEditingItem({ type: 'accountability', id: role.id, data: role })} onDelete={(id) => handleDelete('accountability', id)} />
                 )}
               </div>
             </div>
           </div>
         )}
+      </div>
+    );
+  };
+
+  // Organizational Chart Component
+  const OrgChart = ({ roles, onEdit, onDelete }) => {
+    // Build tree structure
+    const buildTree = () => {
+      const roleMap = {};
+      const roots = [];
+
+      // Create a map of all roles
+      roles.forEach(role => {
+        roleMap[role.id] = { ...role, children: [] };
+      });
+
+      // Build the tree
+      roles.forEach(role => {
+        if (role.reportsTo && roleMap[role.reportsTo]) {
+          roleMap[role.reportsTo].children.push(roleMap[role.id]);
+        } else {
+          roots.push(roleMap[role.id]);
+        }
+      });
+
+      return roots;
+    };
+
+    const renderNode = (node, level = 0) => {
+      const hasChildren = node.children && node.children.length > 0;
+      
+      return (
+        <div key={node.id} className="flex flex-col items-center">
+          {/* Node Card */}
+          <div className="relative mb-4">
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg shadow-lg p-4 min-w-[200px] max-w-[250px] hover:shadow-xl transition-shadow">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg mb-1">{node.roleName || 'Untitled Role'}</h3>
+                  {node.personName && (
+                    <p className="text-sm text-orange-100 font-medium">{node.personName}</p>
+                  )}
+                  {node.department && (
+                    <p className="text-xs text-orange-200 mt-1">{node.department}</p>
+                  )}
+                </div>
+                <div className="flex gap-1 ml-2">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onEdit(node); }} 
+                    className="text-white hover:text-orange-200"
+                    title="Edit"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); if (window.confirm('Are you sure you want to delete this role?')) onDelete(node.id); }} 
+                    className="text-white hover:text-orange-200"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+              {node.responsibilities && (
+                <div className="mt-2 pt-2 border-t border-orange-400">
+                  <p className="text-xs text-orange-100 line-clamp-2">{node.responsibilities}</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Connector Line Down */}
+            {hasChildren && (
+              <div className="absolute left-1/2 top-full w-0.5 h-6 bg-gray-400 transform -translate-x-1/2"></div>
+            )}
+          </div>
+
+          {/* Children */}
+          {hasChildren && (
+            <div className="relative">
+              {/* Horizontal Line */}
+              <div className="absolute left-0 right-0 top-0 h-0.5 bg-gray-400"></div>
+              
+              {/* Children Container */}
+              <div className="flex gap-8 pt-6 relative">
+                {node.children.map((child, index) => (
+                  <div key={child.id} className="relative">
+                    {/* Vertical Line to Child */}
+                    {index > 0 && (
+                      <div className="absolute left-0 top-0 bottom-6 w-0.5 bg-gray-400 transform -translate-x-1/2"></div>
+                    )}
+                    {index < node.children.length - 1 && (
+                      <div className="absolute right-0 top-0 bottom-6 w-0.5 bg-gray-400 transform translate-x-1/2"></div>
+                    )}
+                    {/* Horizontal Line to Child */}
+                    <div className="absolute left-1/2 top-0 w-0.5 h-6 bg-gray-400 transform -translate-x-1/2"></div>
+                    
+                    {renderNode(child, level + 1)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const tree = buildTree();
+
+    return (
+      <div className="overflow-x-auto">
+        <div className="flex justify-center min-w-max py-8">
+          {tree.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              No organizational structure found. Add roles and set their reporting relationships.
+            </div>
+          ) : (
+            <div className="flex gap-8">
+              {tree.map(root => renderNode(root))}
+            </div>
+          )}
+        </div>
       </div>
     );
   };
