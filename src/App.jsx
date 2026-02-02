@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Eye, MessageSquare, UserCheck } from 'lucide-react';
 import './App.css';
 
 const NinetyHub = () => {
@@ -142,6 +142,8 @@ const NinetyHub = () => {
       setGoals1Year(loadData('goals1Year', []));
       setGoals90Day(loadData('goals90Day', []));
       setAccountabilityChart(loadData('accountabilityChart', []));
+      setHeadlines(loadData('headlines', []));
+      setOneOnOnes(loadData('oneOnOnes', []));
       
       setVto(loadData('vto', [
         // Core Values
@@ -198,6 +200,8 @@ const NinetyHub = () => {
   useEffect(() => { saveData('goals1Year', goals1Year); }, [goals1Year]);
   useEffect(() => { saveData('goals90Day', goals90Day); }, [goals90Day]);
   useEffect(() => { saveData('accountabilityChart', accountabilityChart); }, [accountabilityChart]);
+  useEffect(() => { saveData('headlines', headlines); }, [headlines]);
+  useEffect(() => { saveData('oneOnOnes', oneOnOnes); }, [oneOnOnes]);
 
   // CRUD Operations
   const handleAdd = (type, data) => {
@@ -214,6 +218,8 @@ const NinetyHub = () => {
       case 'goal1Year': setGoals1Year([...goals1Year, newItem]); break;
       case 'goal90Day': setGoals90Day([...goals90Day, newItem]); break;
       case 'accountability': setAccountabilityChart([...accountabilityChart, newItem]); break;
+      case 'headline': setHeadlines([...headlines, newItem]); break;
+      case 'oneOnOne': setOneOnOnes([...oneOnOnes, newItem]); break;
       default: break;
     }
     setShowAddModal(null);
@@ -232,6 +238,8 @@ const NinetyHub = () => {
       case 'goal1Year': setGoals1Year(goals1Year.map(g => g.id === id ? { ...g, ...data } : g)); break;
       case 'goal90Day': setGoals90Day(goals90Day.map(g => g.id === id ? { ...g, ...data } : g)); break;
       case 'accountability': setAccountabilityChart(accountabilityChart.map(a => a.id === id ? { ...a, ...data } : a)); break;
+      case 'headline': setHeadlines(headlines.map(h => h.id === id ? { ...h, ...data } : h)); break;
+      case 'oneOnOne': setOneOnOnes(oneOnOnes.map(o => o.id === id ? { ...o, ...data } : o)); break;
       default: break;
     }
     setEditingItem(null);
@@ -251,6 +259,8 @@ const NinetyHub = () => {
         case 'goal1Year': setGoals1Year(goals1Year.filter(g => g.id !== id)); break;
         case 'goal90Day': setGoals90Day(goals90Day.filter(g => g.id !== id)); break;
         case 'accountability': setAccountabilityChart(accountabilityChart.filter(a => a.id !== id)); break;
+        case 'headline': setHeadlines(headlines.filter(h => h.id !== id)); break;
+        case 'oneOnOne': setOneOnOnes(oneOnOnes.filter(o => o.id !== id)); break;
         default: break;
       }
     }
@@ -893,6 +903,146 @@ const NinetyHub = () => {
           <input className="w-full p-2 border rounded mb-4" placeholder="Assigned To" value={formData.assignedTo || ''} onChange={(e) => setFormData({...formData, assignedTo: e.target.value})} />
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('meeting', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Headlines Modals (Ninety: announcements/updates that don't require discussion)
+  const AddHeadlineModal = () => {
+    const [formData, setFormData] = useState({ title: '', content: '', author: '', date: new Date().toISOString().slice(0, 10), category: 'announcement' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add Headline</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Headline Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[80px]" placeholder="Content / Update (no action required)" value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="announcement">Announcement</option>
+            <option value="good-news">Good News</option>
+            <option value="update">Update</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Author" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" type="date" placeholder="Date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('headline', formData)}>Add Headline</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditHeadlineModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit Headline</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Headline Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[80px]" placeholder="Content / Update" value={formData.content || ''} onChange={(e) => setFormData({...formData, content: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.category || 'announcement'} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="announcement">Announcement</option>
+            <option value="good-news">Good News</option>
+            <option value="update">Update</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Author" value={formData.author || ''} onChange={(e) => setFormData({...formData, author: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" type="date" value={formData.date || ''} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('headline', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 1-on-1 Modals (Ninety: one-on-one meetings, quarterly/annual reviews)
+  const AddOneOnOneModal = () => {
+    const [formData, setFormData] = useState({ title: '', manager: '', participant: '', date: '', time: '', type: 'regular', agenda: '', notes: '', status: 'scheduled' });
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add 1-on-1</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title (e.g. John & Sarah 1:1)" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Manager" value={formData.manager} onChange={(e) => setFormData({...formData, manager: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Participant / Direct Report" value={formData.participant} onChange={(e) => setFormData({...formData, participant: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="time" placeholder="Time" value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            <option value="regular">Regular 1-on-1</option>
+            <option value="quarterly-review">Quarterly Review</option>
+            <option value="annual">Annual Review</option>
+          </select>
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Agenda" value={formData.agenda} onChange={(e) => setFormData({...formData, agenda: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Notes" value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-4" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('oneOnOne', formData)}>Add 1-on-1</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EditOneOnOneModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit 1-on-1</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Manager" value={formData.manager || ''} onChange={(e) => setFormData({...formData, manager: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Participant" value={formData.participant || ''} onChange={(e) => setFormData({...formData, participant: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="date" value={formData.date || ''} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="time" value={formData.time || ''} onChange={(e) => setFormData({...formData, time: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.type || 'regular'} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            <option value="regular">Regular 1-on-1</option>
+            <option value="quarterly-review">Quarterly Review</option>
+            <option value="annual">Annual Review</option>
+          </select>
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Agenda" value={formData.agenda || ''} onChange={(e) => setFormData({...formData, agenda: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Notes" value={formData.notes || ''} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-4" value={formData.status || 'scheduled'} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('oneOnOne', item.id, formData)}>Save Changes</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
           </div>
         </div>
@@ -2230,6 +2380,148 @@ const NinetyHub = () => {
     </div>
   );
 
+  // Headlines Component (Ninety: announcements/updates that don't require discussion)
+  const Headlines = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Headlines</h2>
+        <button onClick={() => setShowAddModal('headline')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Headline
+        </button>
+      </div>
+      <div className="p-6">
+        <p className="text-sm text-gray-600 mb-4">Share announcements and updates that don&apos;t require discussion or action items. Headlines cascade across the organization and can be used in meeting agendas.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Author</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {headlines.map((item, index) => (
+                <tr key={item.id} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-4 py-3 text-sm font-medium">{item.title || 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      item.category === 'good-news' ? 'bg-green-100 text-green-700' :
+                      item.category === 'announcement' ? 'bg-blue-100 text-blue-700' :
+                      item.category === 'update' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {item.category ? item.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.author || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={() => setEditingItem({ type: 'headline', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700" title="Edit">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete('headline', item.id)} className="text-red-600 hover:text-red-700" title="Delete">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {headlines.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No headlines yet. Click &quot;Add Headline&quot; to share your first announcement or update.
+          </div>
+        )}
+        {headlines.length > 0 && (
+          <div className="mt-6 space-y-4 border-t pt-6">
+            <h3 className="font-semibold text-gray-700">Recent Headlines (preview)</h3>
+            {headlines.slice(0, 5).map(item => (
+              <div key={item.id} className="border rounded-lg p-4 bg-gray-50">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{item.title}</h4>
+                    {item.content && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.content}</p>}
+                    <p className="text-xs text-gray-500 mt-2">{item.author && `${item.author} • `}{item.date ? new Date(item.date).toLocaleDateString() : ''}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // 1-on-1 Component (Ninety: one-on-one meetings, quarterly/annual reviews)
+  const OneOnOne = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">1-on-1</h2>
+        <button onClick={() => setShowAddModal('oneOnOne')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add 1-on-1
+        </button>
+      </div>
+      <div className="p-6">
+        <p className="text-sm text-gray-600 mb-4">Schedule and track one-on-one meetings, quarterly reviews, and annual discussions. Keep agenda and notes in one place.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Manager / Participant</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Time</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {oneOnOnes.map((item, index) => (
+                <tr key={item.id} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-4 py-3 text-sm font-medium">{item.title || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.manager && item.participant ? `${item.manager} / ${item.participant}` : (item.manager || item.participant || 'N/A')}</td>
+                  <td className="px-4 py-3 text-sm">{item.type ? item.type.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.time || 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      item.status === 'scheduled' ? 'bg-blue-100 text-blue-700' :
+                      item.status === 'completed' ? 'bg-green-100 text-green-700' :
+                      item.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={() => setEditingItem({ type: 'oneOnOne', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700" title="Edit">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete('oneOnOne', item.id)} className="text-red-600 hover:text-red-700" title="Delete">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {oneOnOnes.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No 1-on-1s scheduled yet. Click &quot;Add 1-on-1&quot; to create your first one-on-one or review.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar Navigation */}
@@ -2256,7 +2548,9 @@ const NinetyHub = () => {
               { id: 'scorecard', label: 'Scorecard', icon: BarChart3 },
               { id: 'vto', label: 'VTO', icon: Eye },
               { id: 'accountability', label: 'Accountability Chart', icon: Users },
-              { id: 'meetings', label: 'Meetings', icon: Calendar }
+              { id: 'meetings', label: 'Meetings', icon: Calendar },
+              { id: 'headlines', label: 'Headlines', icon: MessageSquare },
+              { id: 'oneOnOne', label: '1-on-1', icon: UserCheck }
             ].map(tab => {
               const Icon = tab.icon;
               return (
@@ -2295,6 +2589,8 @@ const NinetyHub = () => {
                   {activeTab === 'vto' && 'Vision/Traction Organizer'}
                   {activeTab === 'accountability' && 'Accountability Chart'}
                   {activeTab === 'meetings' && 'Meetings'}
+                  {activeTab === 'headlines' && 'Headlines'}
+                  {activeTab === 'oneOnOne' && '1-on-1'}
                 </h2>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -2316,6 +2612,8 @@ const NinetyHub = () => {
           {activeTab === 'vto' && <VTO />}
           {activeTab === 'accountability' && <AccountabilityChart />}
           {activeTab === 'meetings' && <Meetings />}
+          {activeTab === 'headlines' && <Headlines />}
+          {activeTab === 'oneOnOne' && <OneOnOne />}
         </main>
       </div>
 
@@ -2330,6 +2628,8 @@ const NinetyHub = () => {
       {showAddModal === 'scorecard' && <AddScorecardModal />}
       {showAddModal === 'vto' && <AddVTOModal />}
       {showAddModal === 'meeting' && <AddMeetingModal />}
+      {showAddModal === 'headline' && <AddHeadlineModal />}
+      {showAddModal === 'oneOnOne' && <AddOneOnOneModal />}
       {showAddModal === 'accountability' && <AddAccountabilityModal />}
 
       {editingItem && editingItem.type === 'goal' && <EditGoalModal item={editingItem} />}
@@ -2342,6 +2642,8 @@ const NinetyHub = () => {
       {editingItem && editingItem.type === 'scorecard' && <EditScorecardModal item={editingItem} />}
       {editingItem && editingItem.type === 'vto' && <EditVTOModal item={editingItem} />}
       {editingItem && editingItem.type === 'meeting' && <EditMeetingModal item={editingItem} />}
+      {editingItem && editingItem.type === 'headline' && <EditHeadlineModal item={editingItem} />}
+      {editingItem && editingItem.type === 'oneOnOne' && <EditOneOnOneModal item={editingItem} />}
       {editingItem && editingItem.type === 'accountability' && <EditAccountabilityModal item={editingItem} />}
     </div>
   );
