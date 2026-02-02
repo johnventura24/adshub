@@ -52,6 +52,39 @@ const NinetyHub = () => {
     }
   };
 
+  // API base URL for dashboard/ Supabase-backed endpoints (same server in prod, localhost:3000 in dev)
+  const getApiBaseUrl = () => (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
+
+  // Fetch issues and todos from server (Supabase) and merge into state
+  const fetchDashboardFromApi = async () => {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/dashboard`, { headers: { 'Content-Type': 'application/json' } });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data.issues)) {
+        setIssues(data.issues.map((i) => ({
+          id: i.id,
+          title: i.title,
+          priority: i.priority,
+          owner: i.assigned_to,
+          status: i.status,
+          description: i.description
+        })));
+      }
+      if (Array.isArray(data.todos)) {
+        setTodos(data.todos.map((t) => ({
+          id: t.id,
+          title: t.task,
+          assignee: t.assigned_to,
+          dueDate: t.due_date,
+          completed: !!t.completed
+        })));
+      }
+    } catch (err) {
+      console.error('Failed to fetch dashboard from API:', err);
+    }
+  };
+
   // Fetch Tableau KPIs
   const fetchTableauKPIs = async () => {
     setTableauLoading(true);
@@ -173,6 +206,12 @@ const NinetyHub = () => {
       ]));
       setMeetings(loadData('meetings', []));
       
+      // Fetch issues/todos from Supabase via API (so data shows from database)
+      const dashboardTimeoutId = setTimeout(() => {
+        fetchDashboardFromApi().catch(err => {
+          console.error('Failed to fetch dashboard:', err);
+        });
+      }, 500);
       // Fetch Tableau KPIs on mount (with slight delay to ensure everything is loaded)
       const timeoutId = setTimeout(() => {
         fetchTableauKPIs().catch(err => {
@@ -189,6 +228,7 @@ const NinetyHub = () => {
       }, 5 * 60 * 1000);
       
       return () => {
+        clearTimeout(dashboardTimeoutId);
         clearTimeout(timeoutId);
         clearInterval(refreshInterval);
       };
@@ -218,13 +258,57 @@ const NinetyHub = () => {
   useEffect(() => { saveData('assessments', assessments); }, [assessments]);
 
   // CRUD Operations
-  const handleAdd = (type, data) => {
+  const handleAdd = async (type, data) => {
+    const base = getApiBaseUrl();
+    if (type === 'issue') {
+      try {
+        const res = await fetch(`${base}/api/issues`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: data.title,
+            description: data.description || '',
+            priority: data.priority || 'medium',
+            status: data.status || 'open',
+            assigned_to: data.owner || ''
+          })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const created = await res.json();
+        setIssues((prev) => [...prev, { id: created.id, title: created.title, priority: created.priority, owner: created.assigned_to, status: created.status, description: created.description }]);
+        setShowAddModal(null);
+      } catch (err) {
+        console.error('Failed to create issue:', err);
+        alert('Failed to save issue. Check console and that the server is connected to Supabase.');
+      }
+      return;
+    }
+    if (type === 'todo') {
+      try {
+        const res = await fetch(`${base}/api/todos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task: data.title,
+            completed: data.completed || false,
+            due_date: data.dueDate || null,
+            assigned_to: data.assignee || ''
+          })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const created = await res.json();
+        setTodos((prev) => [...prev, { id: created.id, title: created.task, assignee: created.assigned_to, dueDate: created.due_date, completed: !!created.completed }]);
+        setShowAddModal(null);
+      } catch (err) {
+        console.error('Failed to create todo:', err);
+        alert('Failed to save todo. Check console and that the server is connected to Supabase.');
+      }
+      return;
+    }
     const newItem = { ...data, id: Date.now() };
     switch(type) {
       case 'goal': setGoals([...goals, newItem]); break;
       case 'rock': setRocks([...rocks, newItem]); break;
-      case 'issue': setIssues([...issues, newItem]); break;
-      case 'todo': setTodos([...todos, newItem]); break;
       case 'scorecard': setScorecard([...scorecard, newItem]); break;
       case 'vto': setVto([...vto, newItem]); break;
       case 'meeting': setMeetings([...meetings, newItem]); break;
@@ -243,12 +327,54 @@ const NinetyHub = () => {
     setShowAddModal(null);
   };
 
-  const handleEdit = (type, id, data) => {
+  const handleEdit = async (type, id, data) => {
+    const base = getApiBaseUrl();
+    if (type === 'issue') {
+      try {
+        const res = await fetch(`${base}/api/issues/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: data.title,
+            description: data.description || '',
+            priority: data.priority,
+            status: data.status,
+            assigned_to: data.owner || ''
+          })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        setIssues((prev) => prev.map(i => i.id === id ? { ...i, ...data } : i));
+        setEditingItem(null);
+      } catch (err) {
+        console.error('Failed to update issue:', err);
+        alert('Failed to update issue.');
+      }
+      return;
+    }
+    if (type === 'todo') {
+      try {
+        const res = await fetch(`${base}/api/todos/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task: data.title,
+            completed: data.completed,
+            due_date: data.dueDate || null,
+            assigned_to: data.assignee || ''
+          })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        setTodos((prev) => prev.map(t => t.id === id ? { ...t, ...data } : t));
+        setEditingItem(null);
+      } catch (err) {
+        console.error('Failed to update todo:', err);
+        alert('Failed to update todo.');
+      }
+      return;
+    }
     switch(type) {
       case 'goal': setGoals(goals.map(g => g.id === id ? { ...g, ...data } : g)); break;
       case 'rock': setRocks(rocks.map(r => r.id === id ? { ...r, ...data } : r)); break;
-      case 'issue': setIssues(issues.map(i => i.id === id ? { ...i, ...data } : i)); break;
-      case 'todo': setTodos(todos.map(t => t.id === id ? { ...t, ...data } : t)); break;
       case 'scorecard': setScorecard(scorecard.map(s => s.id === id ? { ...s, ...data } : s)); break;
       case 'vto': setVto(vto.map(v => v.id === id ? { ...v, ...data } : v)); break;
       case 'meeting': setMeetings(meetings.map(m => m.id === id ? { ...m, ...data } : m)); break;
@@ -267,28 +393,48 @@ const NinetyHub = () => {
     setEditingItem(null);
   };
 
-  const handleDelete = (type, id) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      switch(type) {
-        case 'goal': setGoals(goals.filter(g => g.id !== id)); break;
-        case 'rock': setRocks(rocks.filter(r => r.id !== id)); break;
-        case 'issue': setIssues(issues.filter(i => i.id !== id)); break;
-        case 'todo': setTodos(todos.filter(t => t.id !== id)); break;
-        case 'scorecard': setScorecard(scorecard.filter(s => s.id !== id)); break;
-        case 'vto': setVto(vto.filter(v => v.id !== id)); break;
-        case 'meeting': setMeetings(meetings.filter(m => m.id !== id)); break;
-        case 'goal3Year': setGoals3Year(goals3Year.filter(g => g.id !== id)); break;
-        case 'goal1Year': setGoals1Year(goals1Year.filter(g => g.id !== id)); break;
-        case 'goal90Day': setGoals90Day(goals90Day.filter(g => g.id !== id)); break;
-        case 'accountability': setAccountabilityChart(accountabilityChart.filter(a => a.id !== id)); break;
-        case 'headline': setHeadlines(headlines.filter(h => h.id !== id)); break;
-        case 'oneOnOne': setOneOnOnes(oneOnOnes.filter(o => o.id !== id)); break;
-        case 'knowledge': setKnowledge(knowledge.filter(k => k.id !== id)); break;
-        case 'directory': setDirectory(directory.filter(d => d.id !== id)); break;
-        case 'eosToolbox': setEosToolbox(eosToolbox.filter(e => e.id !== id)); break;
-        case 'assessment': setAssessments(assessments.filter(a => a.id !== id)); break;
-        default: break;
+  const handleDelete = async (type, id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    const base = getApiBaseUrl();
+    if (type === 'issue') {
+      try {
+        const res = await fetch(`${base}/api/issues/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(await res.text());
+        setIssues((prev) => prev.filter(i => i.id !== id));
+      } catch (err) {
+        console.error('Failed to delete issue:', err);
+        alert('Failed to delete issue.');
       }
+      return;
+    }
+    if (type === 'todo') {
+      try {
+        const res = await fetch(`${base}/api/todos/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(await res.text());
+        setTodos((prev) => prev.filter(t => t.id !== id));
+      } catch (err) {
+        console.error('Failed to delete todo:', err);
+        alert('Failed to delete todo.');
+      }
+      return;
+    }
+    switch(type) {
+      case 'goal': setGoals(goals.filter(g => g.id !== id)); break;
+      case 'rock': setRocks(rocks.filter(r => r.id !== id)); break;
+      case 'scorecard': setScorecard(scorecard.filter(s => s.id !== id)); break;
+      case 'vto': setVto(vto.filter(v => v.id !== id)); break;
+      case 'meeting': setMeetings(meetings.filter(m => m.id !== id)); break;
+      case 'goal3Year': setGoals3Year(goals3Year.filter(g => g.id !== id)); break;
+      case 'goal1Year': setGoals1Year(goals1Year.filter(g => g.id !== id)); break;
+      case 'goal90Day': setGoals90Day(goals90Day.filter(g => g.id !== id)); break;
+      case 'accountability': setAccountabilityChart(accountabilityChart.filter(a => a.id !== id)); break;
+      case 'headline': setHeadlines(headlines.filter(h => h.id !== id)); break;
+      case 'oneOnOne': setOneOnOnes(oneOnOnes.filter(o => o.id !== id)); break;
+      case 'knowledge': setKnowledge(knowledge.filter(k => k.id !== id)); break;
+      case 'directory': setDirectory(directory.filter(d => d.id !== id)); break;
+      case 'eosToolbox': setEosToolbox(eosToolbox.filter(e => e.id !== id)); break;
+      case 'assessment': setAssessments(assessments.filter(a => a.id !== id)); break;
+      default: break;
     }
   };
 
