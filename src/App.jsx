@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Eye, MessageSquare, UserCheck } from 'lucide-react';
+import { Plus, Edit2, Trash2, Target, TrendingUp, AlertCircle, CheckSquare, BarChart3, Users, X, RefreshCw, ExternalLink, Calendar, Eye, MessageSquare, UserCheck, LayoutDashboard, LineChart, BookOpen, Contact, Wrench, ClipboardList } from 'lucide-react';
 import './App.css';
 
 const NinetyHub = () => {
@@ -22,6 +22,10 @@ const NinetyHub = () => {
   const [accountabilityChart, setAccountabilityChart] = useState([]);
   const [headlines, setHeadlines] = useState([]);
   const [oneOnOnes, setOneOnOnes] = useState([]);
+  const [knowledge, setKnowledge] = useState([]);
+  const [directory, setDirectory] = useState([]);
+  const [eosToolbox, setEosToolbox] = useState([]);
+  const [assessments, setAssessments] = useState([]);
   
   // Tableau KPIs state
   const [tableauKPIs, setTableauKPIs] = useState(null);
@@ -146,6 +150,10 @@ const NinetyHub = () => {
       setAccountabilityChart(loadData('accountabilityChart', []));
       setHeadlines(loadData('headlines', []));
       setOneOnOnes(loadData('oneOnOnes', []));
+      setKnowledge(loadData('knowledge', []));
+      setDirectory(loadData('directory', []));
+      setEosToolbox(loadData('eosToolbox', []));
+      setAssessments(loadData('assessments', []));
       
       setVto(loadData('vto', [
         // Core Values (under VTO > Vision)
@@ -204,6 +212,10 @@ const NinetyHub = () => {
   useEffect(() => { saveData('accountabilityChart', accountabilityChart); }, [accountabilityChart]);
   useEffect(() => { saveData('headlines', headlines); }, [headlines]);
   useEffect(() => { saveData('oneOnOnes', oneOnOnes); }, [oneOnOnes]);
+  useEffect(() => { saveData('knowledge', knowledge); }, [knowledge]);
+  useEffect(() => { saveData('directory', directory); }, [directory]);
+  useEffect(() => { saveData('eosToolbox', eosToolbox); }, [eosToolbox]);
+  useEffect(() => { saveData('assessments', assessments); }, [assessments]);
 
   // CRUD Operations
   const handleAdd = (type, data) => {
@@ -222,6 +234,10 @@ const NinetyHub = () => {
       case 'accountability': setAccountabilityChart([...accountabilityChart, newItem]); break;
       case 'headline': setHeadlines([...headlines, newItem]); break;
       case 'oneOnOne': setOneOnOnes([...oneOnOnes, newItem]); break;
+      case 'knowledge': setKnowledge([...knowledge, newItem]); break;
+      case 'directory': setDirectory([...directory, newItem]); break;
+      case 'eosToolbox': setEosToolbox([...eosToolbox, newItem]); break;
+      case 'assessment': setAssessments([...assessments, newItem]); break;
       default: break;
     }
     setShowAddModal(null);
@@ -242,6 +258,10 @@ const NinetyHub = () => {
       case 'accountability': setAccountabilityChart(accountabilityChart.map(a => a.id === id ? { ...a, ...data } : a)); break;
       case 'headline': setHeadlines(headlines.map(h => h.id === id ? { ...h, ...data } : h)); break;
       case 'oneOnOne': setOneOnOnes(oneOnOnes.map(o => o.id === id ? { ...o, ...data } : o)); break;
+      case 'knowledge': setKnowledge(knowledge.map(k => k.id === id ? { ...k, ...data } : k)); break;
+      case 'directory': setDirectory(directory.map(d => d.id === id ? { ...d, ...data } : d)); break;
+      case 'eosToolbox': setEosToolbox(eosToolbox.map(e => e.id === id ? { ...e, ...data } : e)); break;
+      case 'assessment': setAssessments(assessments.map(a => a.id === id ? { ...a, ...data } : a)); break;
       default: break;
     }
     setEditingItem(null);
@@ -263,6 +283,10 @@ const NinetyHub = () => {
         case 'accountability': setAccountabilityChart(accountabilityChart.filter(a => a.id !== id)); break;
         case 'headline': setHeadlines(headlines.filter(h => h.id !== id)); break;
         case 'oneOnOne': setOneOnOnes(oneOnOnes.filter(o => o.id !== id)); break;
+        case 'knowledge': setKnowledge(knowledge.filter(k => k.id !== id)); break;
+        case 'directory': setDirectory(directory.filter(d => d.id !== id)); break;
+        case 'eosToolbox': setEosToolbox(eosToolbox.filter(e => e.id !== id)); break;
+        case 'assessment': setAssessments(assessments.filter(a => a.id !== id)); break;
         default: break;
       }
     }
@@ -1045,6 +1069,210 @@ const NinetyHub = () => {
           </select>
           <div className="flex gap-2">
             <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('oneOnOne', item.id, formData)}>Save Changes</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Knowledge Modals
+  const AddKnowledgeModal = () => {
+    const [formData, setFormData] = useState({ title: '', content: '', category: 'guide', addedBy: '' });
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add Knowledge Article</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[80px]" placeholder="Content" value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="guide">Guide</option>
+            <option value="policy">Policy</option>
+            <option value="faq">FAQ</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-4" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('knowledge', formData)}>Add</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const EditKnowledgeModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit Knowledge Article</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[80px]" placeholder="Content" value={formData.content || ''} onChange={(e) => setFormData({...formData, content: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.category || 'guide'} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="guide">Guide</option>
+            <option value="policy">Policy</option>
+            <option value="faq">FAQ</option>
+            <option value="other">Other</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-4" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('knowledge', item.id, formData)}>Save</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Directory Modals
+  const AddDirectoryModal = () => {
+    const [formData, setFormData] = useState({ name: '', role: '', email: '', department: '', phone: '' });
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add Directory Entry</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Role / Title" value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Department" value={formData.department} onChange={(e) => setFormData({...formData, department: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Phone" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('directory', formData)}>Add</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const EditDirectoryModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit Directory Entry</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Name" value={formData.name || ''} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Role" value={formData.role || ''} onChange={(e) => setFormData({...formData, role: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" type="email" placeholder="Email" value={formData.email || ''} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="Department" value={formData.department || ''} onChange={(e) => setFormData({...formData, department: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-4" placeholder="Phone" value={formData.phone || ''} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('directory', item.id, formData)}>Save</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // EOS Toolbox Modals
+  const AddEosToolboxModal = () => {
+    const [formData, setFormData] = useState({ name: '', description: '', url: '', category: 'tool' });
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add EOS Toolbox Item</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="URL (optional)" value={formData.url} onChange={(e) => setFormData({...formData, url: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-4" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="tool">Tool</option>
+            <option value="template">Template</option>
+            <option value="resource">Resource</option>
+          </select>
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('eosToolbox', formData)}>Add</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const EditEosToolboxModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit EOS Toolbox Item</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Name" value={formData.name || ''} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Description" value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <input className="w-full p-2 border rounded mb-3" placeholder="URL" value={formData.url || ''} onChange={(e) => setFormData({...formData, url: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-4" value={formData.category || 'tool'} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+            <option value="tool">Tool</option>
+            <option value="template">Template</option>
+            <option value="resource">Resource</option>
+          </select>
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('eosToolbox', item.id, formData)}>Save</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Assessments Modals
+  const AddAssessmentModal = () => {
+    const [formData, setFormData] = useState({ title: '', description: '', type: 'self', addedBy: '' });
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Add Assessment</h3>
+            <button onClick={() => setShowAddModal(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            <option value="self">Self Assessment</option>
+            <option value="team">Team Assessment</option>
+            <option value="eos">EOS Assessment</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-4" placeholder="Added By" value={formData.addedBy} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleAdd('assessment', formData)}>Add</button>
+            <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setShowAddModal(null)}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const EditAssessmentModal = ({ item }) => {
+    const [formData, setFormData] = useState(item.data);
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold">Edit Assessment</h3>
+            <button onClick={() => setEditingItem(null)} className="text-gray-500 hover:text-gray-700"><X className="w-5 h-5" /></button>
+          </div>
+          <input className="w-full p-2 border rounded mb-3" placeholder="Title" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+          <textarea className="w-full p-2 border rounded mb-3 min-h-[60px]" placeholder="Description" value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+          <select className="w-full p-2 border rounded mb-3" value={formData.type || 'self'} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+            <option value="self">Self Assessment</option>
+            <option value="team">Team Assessment</option>
+            <option value="eos">EOS Assessment</option>
+          </select>
+          <input className="w-full p-2 border rounded mb-4" placeholder="Added By" value={formData.addedBy || ''} onChange={(e) => setFormData({...formData, addedBy: e.target.value})} />
+          <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onClick={() => handleEdit('assessment', item.id, formData)}>Save</button>
             <button className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400" onClick={() => setEditingItem(null)}>Cancel</button>
           </div>
         </div>
@@ -2557,6 +2785,226 @@ const NinetyHub = () => {
     </div>
   );
 
+  // My 90 — personal view of your Rocks, To-Dos, 1-on-1s
+  const My90 = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b">
+        <h2 className="text-2xl font-bold">My 90</h2>
+        <p className="text-sm text-gray-600 mt-1">Your Rocks, To-Dos, and 1-on-1s in one place.</p>
+      </div>
+      <div className="p-6 space-y-6">
+        <div>
+          <h3 className="font-semibold text-lg mb-3">Your Rocks</h3>
+          <div className="space-y-2">
+            {rocks.length === 0 ? <p className="text-gray-500 text-sm">No rocks assigned.</p> : rocks.slice(0, 5).map(r => (
+              <div key={r.id} className="border rounded p-3 flex justify-between items-center">
+                <span className="font-medium">{r.title}</span>
+                <span className="text-xs px-2 py-1 rounded bg-gray-100">{r.status || 'N/A'}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg mb-3">Your To-Dos</h3>
+          <div className="space-y-2">
+            {todos.filter(t => !t.completed).length === 0 ? <p className="text-gray-500 text-sm">No open to-dos.</p> : todos.filter(t => !t.completed).slice(0, 5).map(t => (
+              <div key={t.id} className="border rounded p-3 flex justify-between items-center">
+                <span className="font-medium">{t.title}</span>
+                <span className="text-xs text-gray-500">Due: {t.dueDate || 'N/A'}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg mb-3">Your 1-on-1s</h3>
+          <div className="space-y-2">
+            {oneOnOnes.filter(o => o.status === 'scheduled').length === 0 ? <p className="text-gray-500 text-sm">No upcoming 1-on-1s.</p> : oneOnOnes.filter(o => o.status === 'scheduled').slice(0, 5).map(o => (
+              <div key={o.id} className="border rounded p-3 flex justify-between items-center">
+                <span className="font-medium">{o.title || '1-on-1'}</span>
+                <span className="text-xs text-gray-500">{o.date ? new Date(o.date).toLocaleDateString() : ''} {o.time || ''}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Insights — dashboards and trends
+  const Insights = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b">
+        <h2 className="text-2xl font-bold">Insights</h2>
+        <p className="text-sm text-gray-600 mt-1">Trends and visibility into company health and priorities.</p>
+      </div>
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="border rounded-lg p-4">
+          <h3 className="font-semibold mb-2">Rocks by Status</h3>
+          <div className="space-y-2 text-sm">
+            {['on-track', 'at-risk', 'done'].map(status => (
+              <div key={status} className="flex justify-between">
+                <span className="capitalize">{status.replace(/-/g, ' ')}</span>
+                <span className="font-medium">{rocks.filter(r => r.status === status).length}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="border rounded-lg p-4">
+          <h3 className="font-semibold mb-2">Issues by Priority</h3>
+          <div className="space-y-2 text-sm">
+            {['high', 'medium', 'low'].map(pri => (
+              <div key={pri} className="flex justify-between">
+                <span className="capitalize">{pri}</span>
+                <span className="font-medium">{issues.filter(i => i.priority === pri).length}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="border rounded-lg p-4 md:col-span-2">
+          <h3 className="font-semibold mb-2">Scorecard Snapshot</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr><th className="text-left py-1">Metric</th><th className="text-right py-1">Target</th><th className="text-right py-1">Actual</th><th className="text-right py-1">Trend</th></tr></thead>
+              <tbody>
+                {scorecard.slice(0, 5).map(s => (
+                  <tr key={s.id} className="border-t"><td className="py-1">{s.metric}</td><td className="text-right">{typeof s.target === 'number' ? s.target.toLocaleString() : s.target}</td><td className="text-right font-medium">{typeof s.actual === 'number' ? s.actual.toLocaleString() : s.actual}</td><td className="text-right">{s.trend === 'up' ? '↑' : s.trend === 'down' ? '↓' : '→'}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Knowledge — knowledge base
+  const KnowledgeTab = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Knowledge</h2>
+        <button onClick={() => setShowAddModal('knowledge')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Article
+        </button>
+      </div>
+      <div className="p-6">
+        <p className="text-sm text-gray-600 mb-4">Guides, policies, and FAQs in one place.</p>
+        <div className="space-y-3">
+          {knowledge.map(item => (
+            <div key={item.id} className="border rounded-lg p-4 flex justify-between items-start">
+              <div>
+                <span className="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded mb-2">{item.category || 'guide'}</span>
+                <h3 className="font-semibold">{item.title}</h3>
+                {item.content && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.content}</p>}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingItem({ type: 'knowledge', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => handleDelete('knowledge', item.id)} className="text-red-600 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {knowledge.length === 0 && <div className="text-center py-12 text-gray-500">No knowledge articles yet. Click &quot;Add Article&quot; to add one.</div>}
+      </div>
+    </div>
+  );
+
+  // Directory — team directory
+  const DirectoryTab = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Directory</h2>
+        <button onClick={() => setShowAddModal('directory')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Person
+        </button>
+      </div>
+      <div className="p-6">
+        <p className="text-sm text-gray-600 mb-4">Team and contact directory.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50"><tr><th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th><th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Role</th><th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Department</th><th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th><th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th></tr></thead>
+            <tbody>
+              {directory.map((item, i) => (
+                <tr key={item.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-4 py-3 font-medium">{item.name || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.role || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.department || 'N/A'}</td>
+                  <td className="px-4 py-3 text-sm">{item.email ? <a href={`mailto:${item.email}`} className="text-blue-600">{item.email}</a> : 'N/A'}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button onClick={() => setEditingItem({ type: 'directory', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700"><Edit2 className="w-4 h-4 inline" /></button>
+                    <button onClick={() => handleDelete('directory', item.id)} className="text-red-600 hover:text-red-700 ml-2"><Trash2 className="w-4 h-4 inline" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {directory.length === 0 && <div className="text-center py-12 text-gray-500">No directory entries yet. Click &quot;Add Person&quot; to add one.</div>}
+      </div>
+    </div>
+  );
+
+  // EOS Toolbox — tools and resources
+  const EOSToolboxTab = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">EOS Toolbox</h2>
+        <button onClick={() => setShowAddModal('eosToolbox')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Tool
+        </button>
+      </div>
+      <div className="p-6">
+        <p className="text-sm text-gray-600 mb-4">Tools, templates, and resources for EOS.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {eosToolbox.map(item => (
+            <div key={item.id} className="border rounded-lg p-4 flex justify-between items-start">
+              <div>
+                <span className="inline-block px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded mb-2">{item.category || 'tool'}</span>
+                {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline flex items-center gap-1">{item.name} <ExternalLink className="w-3 h-3" /></a> : <span className="font-semibold">{item.name}</span>}
+                {item.description && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingItem({ type: 'eosToolbox', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => handleDelete('eosToolbox', item.id)} className="text-red-600 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {eosToolbox.length === 0 && <div className="text-center py-12 text-gray-500">No toolbox items yet. Click &quot;Add Tool&quot; to add one.</div>}
+      </div>
+    </div>
+  );
+
+  // Assessments
+  const AssessmentsTab = () => (
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-6 border-b flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Assessments</h2>
+        <button onClick={() => setShowAddModal('assessment')} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Assessment
+        </button>
+      </div>
+      <div className="p-6">
+        <p className="text-sm text-gray-600 mb-4">Self, team, and EOS assessments.</p>
+        <div className="space-y-3">
+          {assessments.map(item => (
+            <div key={item.id} className="border rounded-lg p-4 flex justify-between items-start">
+              <div>
+                <span className="inline-block px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded mb-2">{item.type ? item.type.replace(/-/g, ' ') : 'assessment'}</span>
+                <h3 className="font-semibold">{item.title}</h3>
+                {item.description && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingItem({ type: 'assessment', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => handleDelete('assessment', item.id)} className="text-red-600 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {assessments.length === 0 && <div className="text-center py-12 text-gray-500">No assessments yet. Click &quot;Add Assessment&quot; to add one.</div>}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar Navigation */}
@@ -2585,7 +3033,13 @@ const NinetyHub = () => {
               { id: 'accountability', label: 'Accountability Chart', icon: Users },
               { id: 'meetings', label: 'Meetings', icon: Calendar },
               { id: 'headlines', label: 'Headlines', icon: MessageSquare },
-              { id: 'oneOnOne', label: '1-on-1', icon: UserCheck }
+              { id: 'oneOnOne', label: '1-on-1', icon: UserCheck },
+              { id: 'my90', label: 'My 90', icon: LayoutDashboard },
+              { id: 'insights', label: 'Insights', icon: LineChart },
+              { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
+              { id: 'directory', label: 'Directory', icon: Contact },
+              { id: 'eosToolbox', label: 'EOS Toolbox', icon: Wrench },
+              { id: 'assessments', label: 'Assessments', icon: ClipboardList }
             ].map(tab => {
               const Icon = tab.icon;
               return (
@@ -2626,6 +3080,12 @@ const NinetyHub = () => {
                   {activeTab === 'meetings' && 'Meetings'}
                   {activeTab === 'headlines' && 'Headlines'}
                   {activeTab === 'oneOnOne' && '1-on-1'}
+                  {activeTab === 'my90' && 'My 90'}
+                  {activeTab === 'insights' && 'Insights'}
+                  {activeTab === 'knowledge' && 'Knowledge'}
+                  {activeTab === 'directory' && 'Directory'}
+                  {activeTab === 'eosToolbox' && 'EOS Toolbox'}
+                  {activeTab === 'assessments' && 'Assessments'}
                 </h2>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -2649,6 +3109,12 @@ const NinetyHub = () => {
           {activeTab === 'meetings' && <Meetings />}
           {activeTab === 'headlines' && <Headlines />}
           {activeTab === 'oneOnOne' && <OneOnOne />}
+          {activeTab === 'my90' && <My90 />}
+          {activeTab === 'insights' && <Insights />}
+          {activeTab === 'knowledge' && <KnowledgeTab />}
+          {activeTab === 'directory' && <DirectoryTab />}
+          {activeTab === 'eosToolbox' && <EOSToolboxTab />}
+          {activeTab === 'assessments' && <AssessmentsTab />}
         </main>
       </div>
 
@@ -2665,6 +3131,10 @@ const NinetyHub = () => {
       {showAddModal === 'meeting' && <AddMeetingModal />}
       {showAddModal === 'headline' && <AddHeadlineModal />}
       {showAddModal === 'oneOnOne' && <AddOneOnOneModal />}
+      {showAddModal === 'knowledge' && <AddKnowledgeModal />}
+      {showAddModal === 'directory' && <AddDirectoryModal />}
+      {showAddModal === 'eosToolbox' && <AddEosToolboxModal />}
+      {showAddModal === 'assessment' && <AddAssessmentModal />}
       {showAddModal === 'accountability' && <AddAccountabilityModal />}
 
       {editingItem && editingItem.type === 'goal' && <EditGoalModal item={editingItem} />}
@@ -2679,6 +3149,10 @@ const NinetyHub = () => {
       {editingItem && editingItem.type === 'meeting' && <EditMeetingModal item={editingItem} />}
       {editingItem && editingItem.type === 'headline' && <EditHeadlineModal item={editingItem} />}
       {editingItem && editingItem.type === 'oneOnOne' && <EditOneOnOneModal item={editingItem} />}
+      {editingItem && editingItem.type === 'knowledge' && <EditKnowledgeModal item={editingItem} />}
+      {editingItem && editingItem.type === 'directory' && <EditDirectoryModal item={editingItem} />}
+      {editingItem && editingItem.type === 'eosToolbox' && <EditEosToolboxModal item={editingItem} />}
+      {editingItem && editingItem.type === 'assessment' && <EditAssessmentModal item={editingItem} />}
       {editingItem && editingItem.type === 'accountability' && <EditAccountabilityModal item={editingItem} />}
     </div>
   );
