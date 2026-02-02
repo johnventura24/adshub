@@ -20,6 +20,8 @@ const NinetyHub = () => {
   const [goals1Year, setGoals1Year] = useState([]);
   const [goals90Day, setGoals90Day] = useState([]);
   const [accountabilityChart, setAccountabilityChart] = useState([]);
+  const [headlines, setHeadlines] = useState([]);
+  const [oneOnOnes, setOneOnOnes] = useState([]);
   
   // Tableau KPIs state
   const [tableauKPIs, setTableauKPIs] = useState(null);
