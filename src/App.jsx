@@ -146,7 +146,7 @@ const NinetyHub = () => {
       setOneOnOnes(loadData('oneOnOnes', []));
       
       setVto(loadData('vto', [
-        // Core Values
+        // Core Values (under VTO > Vision)
         { id: 1, category: 'vision', type: 'core-values', title: 'Live with Integrity', description: 'At Adsync we LIVE WITH INTEGRITY. We show up all day, everyday with the best intentions and a strong moral compass. We do what we say we\'re going to do and we do the right thing even when it\'s not easy. We wear our hearts on our sleeve and were someone you can always rely on.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
         { id: 2, category: 'vision', type: 'core-values', title: 'Be Achievement Hungry', description: 'We ARE ACHIEVEMENT HUNGRY. We have a passion for excellence and strong drive to be the best at what we do. We NEVER give up and were relentlessly on the pursuit of results, smashing goals, and becoming the very best version of ourselves.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
         { id: 3, category: 'vision', type: 'core-values', title: 'Take Massive Action', description: 'We TAKE MASSIVE ACTION. We are pioneers, we do not follow. We are bold with our actions and always find ways to do "the impossible." We are clever problem solvers; resourceful and innovate with our solutions. Were quick to adapt but with a fanatical attention to detail. We do not leave for tomorrow, what can be done today.', addedBy: 'Adsync Leadership', assignedTo: 'All Team Members' },
@@ -2053,7 +2053,40 @@ const NinetyHub = () => {
         {/* Vision Tab Content */}
         {vtoSubTab === 'vision' && (
           <div className="space-y-6">
-            {/* Vision Section */}
+            {/* Core Values Section - under Vision */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b">
+                <h2 className="text-2xl font-bold">Core Values</h2>
+                <p className="text-sm text-gray-600 mt-1">Adsync core values — long-term direction and how we work</p>
+              </div>
+              <div className="p-6 space-y-6">
+                {visionItems.filter(item => item.type === 'core-values').map((item) => (
+                  <div key={item.id} className="border rounded-lg p-5 hover:shadow-md transition-shadow bg-gray-50/50">
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-lg text-gray-900 mb-2">{item.title}</h3>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{item.description || 'No description'}</p>
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <button onClick={() => setEditingItem({ type: 'vto', id: item.id, data: item })} className="text-blue-600 hover:text-blue-700" title="Edit">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete('vto', item.id)} className="text-red-600 hover:text-red-700" title="Delete">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {visionItems.filter(item => item.type === 'core-values').length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No core values yet. Use &quot;Add Vision Item&quot; below and set type to Core Values.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Vision Section (other vision items: Core Focus, 10-Year Target, etc.) */}
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b flex justify-between items-center">
                 <div>
@@ -2066,7 +2099,7 @@ const NinetyHub = () => {
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {visionItems.map((item) => (
+                  {visionItems.filter(item => item.type !== 'core-values').map((item) => (
                     <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -2092,9 +2125,9 @@ const NinetyHub = () => {
                     </div>
                   ))}
                 </div>
-                {visionItems.length === 0 && (
+                {visionItems.filter(item => item.type !== 'core-values').length === 0 && (
                   <div className="text-center py-12 text-gray-500">
-                    No vision items yet. Click "Add Vision Item" to define your company's vision.
+                    No other vision items yet. Click &quot;Add Vision Item&quot; to add Core Focus, 10-Year Target, or other vision items.
                   </div>
                 )}
               </div>
