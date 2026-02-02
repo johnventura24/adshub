@@ -1,10 +1,12 @@
 const { createClient } = require('@supabase/supabase-js');
 
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY. Set them in .env or your host environment.');
+}
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+const supabase = createClient(supabaseUrl || '', supabaseKey || '');
 
 // Goals functions
 async function getGoals() {
@@ -168,12 +170,18 @@ async function getTodos() {
 }
 
 async function createTodo(todoData) {
+  const row = {
+    task: todoData.task != null ? String(todoData.task) : '',
+    completed: Boolean(todoData.completed),
+    priority: todoData.priority || 'medium',
+    due_date: todoData.due_date || null,
+    assigned_to: todoData.assigned_to != null ? String(todoData.assigned_to) : null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
   const { data, error } = await supabase
     .from('todos')
-    .insert([{
-      ...todoData,
-      created_at: new Date().toISOString()
-    }])
+    .insert([row])
     .select();
   
   if (error) throw error;

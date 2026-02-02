@@ -96,7 +96,7 @@ app.post('/api/todos', async (req, res) => {
     res.json(todo);
   } catch (error) {
     console.error('Error creating todo:', error);
-    res.status(500).json({ error: 'Failed to create todo' });
+    res.status(500).json({ error: error.message || 'Failed to create todo' });
   }
 });
 

@@ -289,19 +289,27 @@ const NinetyHub = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            task: data.title,
+            task: data.title != null ? String(data.title) : '',
             completed: data.completed || false,
             due_date: data.dueDate || null,
-            assigned_to: data.assignee || ''
+            assigned_to: data.assignee != null ? String(data.assignee) : ''
           })
         });
-        if (!res.ok) throw new Error(await res.text());
-        const created = await res.json();
+        const body = await res.text();
+        if (!res.ok) {
+          let msg = body;
+          try {
+            const j = JSON.parse(body);
+            if (j.error) msg = j.error;
+          } catch (_) { /* use body as-is */ }
+          throw new Error(msg);
+        }
+        const created = JSON.parse(body);
         setTodos((prev) => [...prev, { id: created.id, title: created.task, assignee: created.assigned_to, dueDate: created.due_date, completed: !!created.completed }]);
         setShowAddModal(null);
       } catch (err) {
         console.error('Failed to create todo:', err);
-        alert('Failed to save todo. Check console and that the server is connected to Supabase.');
+        alert('Failed to save todo: ' + (err.message || err));
       }
       return;
     }
