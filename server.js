@@ -16,6 +16,11 @@ app.get('/health', (req, res) => {
   res.send('OK');
 });
 
+// So you can confirm this server (with API) is running: GET /api returns JSON
+app.get('/api', (req, res) => {
+  res.json({ ok: true, server: 'server.js', routes: ['/api/dashboard', '/api/todos', '/api/issues', '/api/goals/:period'] });
+});
+
 // API routes must come before static files
 
 // Get all dashboard data
