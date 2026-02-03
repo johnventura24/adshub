@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
+// Reading from database (Supabase) via db-service - not from JSON files
 const db = require('./db-service');
 
 const app = express();
@@ -23,18 +24,16 @@ app.get('/api', (req, res) => {
 
 // API routes must come before static files
 
-// Get all dashboard data
+// Get all dashboard data - reading from database (Supabase), not JSON files
 app.get('/api/dashboard', async (req, res) => {
   try {
-    const [goals, revenueFunnel, vto, issues, scorecard, knowledgeBase, todos] = await Promise.all([
-      db.getGoals(),
-      db.getRevenueFunnel(),
-      db.getVTO(),
-      db.getIssues(),
-      db.getScorecard(),
-      db.getKnowledgeBase(),
-      db.getTodos()
-    ]);
+    const goals = await db.getGoals();
+    const revenueFunnel = await db.getRevenueFunnel();
+    const vto = await db.getVTO();
+    const issues = await db.getIssues();
+    const scorecard = await db.getScorecard();
+    const knowledgeBase = await db.getKnowledgeBase();
+    const todos = await db.getTodos();
 
     res.json({
       goals: {

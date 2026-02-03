@@ -15,7 +15,7 @@
     "dev": "concurrently \"npm run server\" \"PORT=3001 npm run start:react\""
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.93.3",
+    "@supabase/supabase-js": "^2.45.0",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",

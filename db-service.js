@@ -1,3 +1,7 @@
+/**
+ * db-service.js - Database connection and data access via Supabase.
+ * All app data is read/written through this module (no JSON files).
+ */
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
