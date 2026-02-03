@@ -28,24 +28,19 @@ app.get('/api', (req, res) => {
 app.get('/api/dashboard', async (req, res) => {
   try {
     const goals = await db.getGoals();
-    const revenueFunnel = await db.getRevenueFunnel();
-    const vto = await db.getVTO();
     const issues = await db.getIssues();
-    const scorecard = await db.getScorecard();
-    const knowledgeBase = await db.getKnowledgeBase();
     const todos = await db.getTodos();
-
     res.json({
       goals: {
-        quarterly: goals.find(g => g.period === 'quarterly') || {},
-        monthly: goals.find(g => g.period === 'monthly') || {}
+        quarterly: (goals || []).find(g => g.period === 'quarterly') || {},
+        monthly: (goals || []).find(g => g.period === 'monthly') || {}
       },
-      revenueFunnel,
-      vto,
-      issues,
-      scorecard,
-      knowledgeBase,
-      todos
+      revenueFunnel: {},
+      vto: {},
+      issues: issues || [],
+      scorecard: [],
+      knowledgeBase: [],
+      todos: todos || []
     });
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
