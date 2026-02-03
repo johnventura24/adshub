@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -9,7 +10,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// Health check for Render
+app.get('/health', (req, res) => {
+  res.send('OK');
+});
+
+// API routes must come before static files
 
 // Get all dashboard data
 app.get('/api/dashboard', async (req, res) => {
@@ -123,6 +130,16 @@ app.delete('/api/todos/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete todo' });
   }
 });
+
+// Serve React build in production; otherwise serve public
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
+} else {
+  app.use(express.static('public'));
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
