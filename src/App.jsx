@@ -53,7 +53,11 @@ const NinetyHub = () => {
   };
 
   // API base URL for dashboard/ Supabase-backed endpoints (same server in prod, localhost:3000 in dev)
-  const getApiBaseUrl = () => (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
+  // Use REACT_APP_API_URL if set (e.g. when API runs on a different Render URL); else same origin in prod, localhost:3000 in dev
+  const getApiBaseUrl = () => {
+    if (process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL.replace(/\/$/, '');
+    return process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000';
+  };
 
   // Fetch issues and todos from server (Supabase) and merge into state
   const fetchDashboardFromApi = async () => {
